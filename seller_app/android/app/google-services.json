@@ -1,0 +1,68 @@
+{
+  "project_info": {
+    "project_number": "684921234071",
+    "project_id": "dinehub-eb523",
+    "storage_bucket": "dinehub-eb523.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:684921234071:android:6f75cec8112474231cffd2",
+        "android_client_info": {
+          "package_name": "com.dinehub.seller_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "684921234071-8675boq9it4osqp2h23qgg0m9s2u7f01.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAAoaZJ6zglZfjz3bFuMuZWOP73zz0dxmA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "684921234071-8675boq9it4osqp2h23qgg0m9s2u7f01.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:684921234071:android:6ae07c545ac600211cffd2",
+        "android_client_info": {
+          "package_name": "com.dinehub.user_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "684921234071-8675boq9it4osqp2h23qgg0m9s2u7f01.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAAoaZJ6zglZfjz3bFuMuZWOP73zz0dxmA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "684921234071-8675boq9it4osqp2h23qgg0m9s2u7f01.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
