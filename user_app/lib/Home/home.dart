@@ -51,6 +51,7 @@ class _DiningPagePageState extends State<Home> {
               'EXPLORE',
               style: TextStyle(
                   fontSize: 15,
+                  fontFamily: "Poppins",
                   fontWeight: FontWeight.bold,
                   color: Color.fromARGB(255, 126, 126, 126)),
             ),
@@ -66,6 +67,7 @@ class _DiningPagePageState extends State<Home> {
               'WHATS ON YOUR MIND?',
               style: TextStyle(
                   fontSize: 15,
+                  fontFamily: "Poppins",
                   fontWeight: FontWeight.bold,
                   color: Color.fromARGB(255, 126, 126, 126)),
             ),
@@ -75,17 +77,13 @@ class _DiningPagePageState extends State<Home> {
             width: double.infinity,
             child: HomePageItems3(),
           ),
-          SizedBox(
-            height: 100,
-            width: double.infinity,
-            child: HomePageItems4(),
-          ),
           Padding(
             padding: EdgeInsets.all(8.0),
             child: Text(
               'OUR RESTAURENTS',
               style: TextStyle(
                   fontSize: 15,
+                  fontFamily: "Poppins",
                   fontWeight: FontWeight.bold,
                   color: Color.fromARGB(255, 126, 126, 126)),
             ),

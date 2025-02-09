@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
@@ -6,13 +5,18 @@ import 'package:user_app/assistant_methods/assistant_methods.dart';
 import 'package:user_app/assistant_methods/cart_item_counter.dart';
 import 'package:user_app/mainScreens/address_screen.dart';
 import 'package:user_app/models/items.dart';
+import 'package:user_app/mainScreens/home_screen.dart';
 import 'package:paymob_payment/paymob_payment.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 import '../assistant_methods/total_ammount.dart';
 import '../splashScreen/splash_screen.dart';
 import '../widgets/cart_item_design.dart';
 import '../widgets/progress_bar.dart';
 import '../widgets/text_widget_header.dart';
 import '../services/payment_service.dart'; // Import PaymentService
+import '../config.dart'; // Import config for API endpoints
+import 'package:shared_preferences/shared_preferences.dart';
 
 class CartScreen extends StatefulWidget {
   final String? sellerUID;
@@ -23,6 +27,7 @@ class CartScreen extends StatefulWidget {
 }
 
 class _CartScreenState extends State<CartScreen> {
+  List<Items> cartItems = [];
   List<int>? separateItemQuantityList;
   num totolAmmount = 0;
   PaymobResponse? response;
@@ -35,6 +40,39 @@ class _CartScreenState extends State<CartScreen> {
     totolAmmount = 0;
     Provider.of<TotalAmmount>(context, listen: false).displayTotolAmmount(0);
     separateItemQuantityList = separateItemQuantities();
+    fetchCartItems();
+  }
+
+  Future<void> fetchCartItems() async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    String? userId = sharedPreferences.getString("uid");
+
+    if (userId == null) {
+      Fluttertoast.showToast(msg: "User ID is null");
+      return;
+    }
+
+    final response = await http.get(
+      Uri.parse(getCart + userId),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      if (data['status'] == true) {
+        setState(() {
+          cartItems = (data['cart'] as List)
+              .map((item) => Items.fromJson(item))
+              .toList();
+        });
+      } else {
+        Fluttertoast.showToast(msg: "Failed to fetch cart items");
+      }
+    } else {
+      Fluttertoast.showToast(msg: "Failed to fetch cart items");
+    }
   }
 
   void _handlePayment() async {
@@ -113,7 +151,10 @@ class _CartScreenState extends State<CartScreen> {
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
-              colors: [Colors.red, Colors.redAccent],
+              colors: [
+                Color(0xFF261E92),
+                Color(0xFF261E92),
+              ],
               begin: FractionalOffset(0.0, 0.0),
               end: FractionalOffset(1.0, 0.0),
               stops: [0.0, 1.0],
@@ -124,16 +165,26 @@ class _CartScreenState extends State<CartScreen> {
         leading: IconButton(
           onPressed: () {
             clearCartNow(context);
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const HomeScreen(),
+              ),
+            );
           },
           icon: const Icon(Icons.clear_all),
         ),
         title: const Text(
-          "I-Eat",
-          style: TextStyle(fontSize: 45, fontFamily: "Signatra"),
+          "DineHub",
+          style: TextStyle(
+              fontSize: 24, fontFamily: "Poppins", color: Colors.white),
         ),
         centerTitle: true,
         automaticallyImplyLeading: true,
         actions: [],
+        iconTheme: const IconThemeData(
+          color: Colors.white, // Change this to your desired color
+        ),
       ),
       floatingActionButton: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -155,9 +206,14 @@ class _CartScreenState extends State<CartScreen> {
                 );
                 Fluttertoast.showToast(msg: "Cart has been cleared");
               },
-              label: const Text("Clear Cart"),
-              backgroundColor: Colors.redAccent,
-              icon: const Icon(Icons.clear_all),
+              label: const Text(
+                "Clear Cart",
+                style: TextStyle(
+                    color: Colors.white), // Change text color to white
+              ),
+              backgroundColor: Color(0xFF261E92),
+              icon: const Icon(Icons.clear_all,
+                  color: Colors.white), // Change icon color to white
             ),
           ),
           Align(
@@ -165,9 +221,14 @@ class _CartScreenState extends State<CartScreen> {
             child: FloatingActionButton.extended(
               heroTag: 'btn2',
               onPressed: _handlePayment, // Handle payment on press
-              label: const Text("Check Out"),
-              backgroundColor: Colors.redAccent,
-              icon: const Icon(Icons.navigate_next),
+              label: const Text(
+                "Check Out",
+                style: TextStyle(
+                    color: Colors.white), // Change text color to white
+              ),
+              backgroundColor: Color(0xFF261E92),
+              icon: const Icon(Icons.navigate_next,
+                  color: Colors.white), // Change icon color to white
             ),
           ),
         ],
@@ -191,6 +252,7 @@ class _CartScreenState extends State<CartScreen> {
                             style: const TextStyle(
                                 color: Colors.black,
                                 fontSize: 18,
+                                fontFamily: "Poppins-Bold",
                                 fontWeight: FontWeight.w500),
                           ),
                   ),
@@ -198,60 +260,39 @@ class _CartScreenState extends State<CartScreen> {
               },
             ),
           ),
-          StreamBuilder<QuerySnapshot>(
-            stream: FirebaseFirestore.instance
-                .collection("items")
-                .where("itemId", whereIn: separateItemIds())
-                .orderBy("publishedDate", descending: true)
-                .snapshots(),
-            builder: (context, snapshot) {
-              return !snapshot.hasData
-                  ? SliverToBoxAdapter(
-                      child: Center(
-                        child: circularProgress(),
-                      ),
-                    )
-                  : snapshot.data!.docs.isEmpty
-                      ? Container()
-                      : SliverList(
-                          delegate: SliverChildBuilderDelegate(
-                            (context, index) {
-                              Items model = Items.fromJson(
-                                snapshot.data!.docs[index].data()!
-                                    as Map<String, dynamic>,
-                              );
+          SliverList(
+            delegate: SliverChildBuilderDelegate(
+              (context, index) {
+                Items model = cartItems[index];
 
-                              if (index == 0) {
-                                totolAmmount = 0;
-                                totolAmmount += (model.price! *
-                                    separateItemQuantityList![index]);
-                              } else {
-                                totolAmmount += (model.price! *
-                                    separateItemQuantityList![index]);
-                              }
+                // Debugging statements
+                print('model.price: ${model.price}');
+                print('separateItemQuantityList: $separateItemQuantityList');
 
-                              if (snapshot.data!.docs.length - 1 == index) {
-                                WidgetsBinding.instance
-                                    .addPostFrameCallback((timeStamp) {
-                                  Provider.of<TotalAmmount>(context,
-                                          listen: false)
-                                      .displayTotolAmmount(
-                                          totolAmmount.toDouble());
-                                });
-                              }
+                if (index == 0) {
+                  totolAmmount = 0;
+                  totolAmmount +=
+                      (model.price! * separateItemQuantityList![index]);
+                } else {
+                  totolAmmount +=
+                      (model.price! * separateItemQuantityList![index]);
+                }
 
-                              return CartItemDesign(
-                                model: model,
-                                context: context,
-                                quanNumber: separateItemQuantityList![index],
-                              );
-                            },
-                            childCount: snapshot.hasData
-                                ? snapshot.data!.docs.length
-                                : 0,
-                          ),
-                        );
-            },
+                if (cartItems.length - 1 == index) {
+                  WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+                    Provider.of<TotalAmmount>(context, listen: false)
+                        .displayTotolAmmount(totolAmmount.toDouble());
+                  });
+                }
+
+                return CartItemDesign(
+                  model: model,
+                  context: context,
+                  quanNumber: separateItemQuantityList![index],
+                );
+              },
+              childCount: cartItems.length,
+            ),
           ),
         ],
       ),

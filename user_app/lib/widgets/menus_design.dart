@@ -48,14 +48,12 @@ class _MenusDesignWidgetState extends State<MenusDesignWidget> {
               style: const TextStyle(
                   color: Color.fromARGB(255, 64, 140, 255),
                   fontSize: 20,
-                  fontFamily: "Times New Roman"),
+                  fontFamily: "Poppins"),
             ),
             Text(
               widget.model!.menuInfo!,
               style: const TextStyle(
-                  color: Colors.grey,
-                  fontSize: 20,
-                  fontFamily: "Times New Roman"),
+                  color: Colors.grey, fontSize: 20, fontFamily: "Poppins"),
             ),
             Divider(
               height: 4,

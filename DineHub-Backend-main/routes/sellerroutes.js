@@ -23,4 +23,6 @@ router.get('/seller/getsellers', SellerController.getAllSellers);
 
 router.post("/seller/delete", SellerController.deleteSeller);
 
+router.post("/seller/find", SellerController.findSeller);
+
 module.exports = router;

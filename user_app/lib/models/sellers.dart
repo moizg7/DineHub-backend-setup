@@ -5,7 +5,6 @@ class Sellers {
   String? phone;
   String? address;
   String? photoUrl;
-  DateTime? createdAt;
 
   Sellers({
     this.sellerUID,
@@ -14,7 +13,6 @@ class Sellers {
     this.phone,
     this.address,
     this.photoUrl,
-    this.createdAt,
   });
 
   Sellers.fromJson(Map<String, dynamic> json) {
@@ -24,8 +22,6 @@ class Sellers {
     phone = json['phone'];
     address = json['address'];
     photoUrl = json['photoUrl'];
-    createdAt =
-        json['createdAt'] != null ? DateTime.parse(json['createdAt']) : null;
   }
 
   Map<String, dynamic> toJson() {
@@ -36,7 +32,6 @@ class Sellers {
     data['phone'] = phone;
     data['address'] = address;
     data['photoUrl'] = photoUrl;
-    data['createdAt'] = createdAt?.toIso8601String();
     return data;
   }
 }

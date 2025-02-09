@@ -1,4 +1,5 @@
 const UserModel = require("../models/user.model");
+const ItemModel = require("../models/item.model"); // Import the Item model
 
 class CartServices {
     
@@ -35,7 +36,20 @@ class CartServices {
             if (!user) {
                 throw new Error("User not found");
             }
-            return { status: true, cart: user.cart };
+
+            // Fetch item details including price
+            const cartItems = await Promise.all(user.cart.map(async (cartItem) => {
+                const item = await ItemModel.findById(cartItem.itemId).lean();
+                return {
+                    ...cartItem,
+                    price: item.price,
+                    title: item.title,
+                    thumbnailUrl: item.thumbnailUrl,
+                    longDescription: item.longDescription,
+                };
+            }));
+
+            return { status: true, cart: cartItems };
         } catch (err) {
             throw err;
         }

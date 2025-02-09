@@ -25,8 +25,8 @@ class _MyAppbarState extends State<MyAppbar> {
         decoration: const BoxDecoration(
           gradient: LinearGradient(
             colors: [
-              Color.fromRGBO(2, 3, 129, 1),
-              Color.fromRGBO(2, 3, 129, 1)
+              Color(0xFF261E92),
+              Color(0xFF261E92),
             ],
             begin: FractionalOffset(0.0, 0.0),
             end: FractionalOffset(1.0, 0.0),
@@ -43,7 +43,7 @@ class _MyAppbarState extends State<MyAppbar> {
       title: const Text(
         "DineHub",
         style:
-            TextStyle(fontSize: 45, fontFamily: "Train", color: Colors.white),
+            TextStyle(fontSize: 24, fontFamily: "Poppins", color: Colors.white),
       ),
       centerTitle: true,
       automaticallyImplyLeading: true,
@@ -59,29 +59,30 @@ class _MyAppbarState extends State<MyAppbar> {
                             CartScreen(sellerUID: widget.sellerUID)));
               },
               icon: const Icon(
-                Icons.shopping_cart,
+                Icons.shopping_cart_checkout,
                 color: Colors.white,
               ),
             ),
-            Stack(
-              children: [
-                const Icon(Icons.brightness_1, size: 20, color: Colors.white),
-                Positioned(
-                  top: 3,
-                  right: 4,
-                  child: Center(
-                    child: Consumer<CartItemCounter>(
-                        builder: (context, counter, c) {
+            Positioned(
+              right: 8,
+              top: 8,
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  const Icon(Icons.brightness_1, size: 20, color: Colors.white),
+                  Consumer<CartItemCounter>(
+                    builder: (context, counter, c) {
                       return Text(
                         counter.count.toString(),
                         style: const TextStyle(
                             color: Color.fromARGB(255, 54, 105, 244),
-                            fontSize: 12),
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold),
                       );
-                    }),
+                    },
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ],
         )

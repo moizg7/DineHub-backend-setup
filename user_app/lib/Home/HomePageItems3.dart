@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import '../mainScreens/search_screen.dart';
 
 class HomePageItems3 extends StatelessWidget {
@@ -32,14 +31,14 @@ class HomePageItems3 extends StatelessWidget {
                               borderRadius: BorderRadius.circular(40),
                               image: const DecorationImage(
                                   image:
-                                      AssetImage('assets/images/jalebi.webp'),
+                                      AssetImage('assets/images/burger1.jpeg'),
                                   fit: BoxFit.cover),
                             ),
                           ),
                         ),
                       ),
                     ),
-                    const Text('Jalebi')
+                    const Text('Burger')
                   ],
                 ),
               ),
@@ -60,15 +59,15 @@ class HomePageItems3 extends StatelessWidget {
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(40),
                               image: const DecorationImage(
-                                  image: AssetImage(
-                                      'assets/images/kajubarfi.jpeg'),
+                                  image:
+                                      AssetImage('assets/images/pizza7.jpeg'),
                                   fit: BoxFit.cover),
                             ),
                           ),
                         ),
                       ),
                     ),
-                    const Text('Kaju Barfi')
+                    const Text('Pizza')
                   ],
                 ),
               ),
@@ -89,15 +88,14 @@ class HomePageItems3 extends StatelessWidget {
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(40),
                               image: const DecorationImage(
-                                  image: AssetImage(
-                                      'assets/images/gulabjamun.jpeg'),
+                                  image: AssetImage('assets/images/cake.jpeg'),
                                   fit: BoxFit.cover),
                             ),
                           ),
                         ),
                       ),
                     ),
-                    const Text('Gulab Jamun')
+                    const Text('Cake')
                   ],
                 ),
               ),
@@ -127,248 +125,6 @@ class HomePageItems3 extends StatelessWidget {
                       ),
                     ),
                     const Text('Soft Drinks')
-                  ],
-                ),
-              ),
-            ],
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Expanded(
-                child: Column(
-                  children: [
-                    Expanded(
-                      child: InkWell(
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const SearchScreen()));
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(40),
-                              image: const DecorationImage(
-                                  image:
-                                      AssetImage('assets/images/laddoo.jpeg'),
-                                  fit: BoxFit.cover),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    const Text('Laddoo')
-                  ],
-                ),
-              ),
-              Expanded(
-                child: Column(
-                  children: [
-                    Expanded(
-                      child: InkWell(
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const SearchScreen()));
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(40),
-                              image: const DecorationImage(
-                                  image: AssetImage('assets/images/shake.jpeg'),
-                                  fit: BoxFit.cover),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    const Text('Shake')
-                  ],
-                ),
-              ),
-              Expanded(
-                child: Column(
-                  children: [
-                    Expanded(
-                      child: InkWell(
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const SearchScreen()));
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(40),
-                              image: const DecorationImage(
-                                  image:
-                                      AssetImage('assets/images/pastries.jpeg'),
-                                  fit: BoxFit.cover),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    const Text('Pastries')
-                  ],
-                ),
-              ),
-              Expanded(
-                child: Column(
-                  children: [
-                    Expanded(
-                      child: InkWell(
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const SearchScreen()));
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(40),
-                              image: const DecorationImage(
-                                  image: AssetImage(
-                                      'assets/images/pastries1.jpeg'),
-                                  fit: BoxFit.cover),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    const Text('Pastries')
-                  ],
-                ),
-              ),
-            ],
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Expanded(
-                child: Column(
-                  children: [
-                    Expanded(
-                      child: InkWell(
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const SearchScreen()));
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(40),
-                              image: const DecorationImage(
-                                  image: AssetImage(
-                                      'assets/images/pastries2.jpeg'),
-                                  fit: BoxFit.cover),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    const Text('Pastie')
-                  ],
-                ),
-              ),
-              Expanded(
-                child: Column(
-                  children: [
-                    Expanded(
-                      child: InkWell(
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const SearchScreen()));
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(40),
-                              image: const DecorationImage(
-                                  image: AssetImage('assets/images/momos.jpeg'),
-                                  fit: BoxFit.cover),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    const Text('Momos')
-                  ],
-                ),
-              ),
-              Expanded(
-                child: Column(
-                  children: [
-                    Expanded(
-                      child: InkWell(
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const SearchScreen()));
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(40),
-                              image: const DecorationImage(
-                                  image: AssetImage(
-                                      'assets/images/chokolate.jpeg'),
-                                  fit: BoxFit.cover),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    const Text('Chokolate')
-                  ],
-                ),
-              ),
-              Expanded(
-                child: Column(
-                  children: [
-                    Expanded(
-                      child: InkWell(
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const SearchScreen()));
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(40),
-                              image: const DecorationImage(
-                                  image:
-                                      AssetImage('assets/images/pizza1.jpeg'),
-                                  fit: BoxFit.cover),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    const Text('Pizza')
                   ],
                 ),
               ),

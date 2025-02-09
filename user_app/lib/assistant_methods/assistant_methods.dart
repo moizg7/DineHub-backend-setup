@@ -50,21 +50,38 @@ separateItemIds() {
 
 Future<void> addItemToCart(
     String? foodItemId, BuildContext context, int itemCounter) async {
+  // Debugging statements
+  print('foodItemId: $foodItemId');
+  print('itemCounter: $itemCounter');
+
+  if (foodItemId == null || itemCounter <= 0) {
+    Fluttertoast.showToast(msg: "Invalid item or quantity.");
+    return;
+  }
+
   SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
   List<String>? tempList = sharedPreferences.getStringList("userCart") ?? [];
-  tempList.add("${foodItemId!}:$itemCounter"); // e.g., "1210259022:2"
+  tempList.add("$foodItemId:$itemCounter"); // e.g., "1210259022:2"
+
+  // Debugging statements
+  print('Adding item to cart: $foodItemId, Quantity: $itemCounter');
+  print('Updated cart list: $tempList');
 
   // Update userCart in MongoDB via Node.js backend
   final response = await http.post(
-    Uri.parse('https://your-backend-url/api/cart/addToCart'),
+    Uri.parse(updateCart), // Use the correct URL from config.dart
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
     },
     body: jsonEncode(<String, dynamic>{
-      'uid': sharedPreferences.getString("uid"),
-      'userCart': tempList,
+      'userId': sharedPreferences.getString("uid"),
+      'itemId': foodItemId,
+      'quantity': itemCounter,
     }),
   );
+
+  print('Response status: ${response.statusCode}');
+  print('Response body: ${response.body}');
 
   if (response.statusCode == 200) {
     Fluttertoast.showToast(msg: "Item Added Successfully.");
@@ -129,10 +146,12 @@ clearCartNow(context) async {
       'Content-Type': 'application/json; charset=UTF-8',
     },
     body: jsonEncode(<String, dynamic>{
-      'uid': sharedPreferences!.getString("uid"),
-      'userCart': emptyList,
+      'userId': sharedPreferences!.getString("uid"), // Ensure 'userId' is sent
     }),
   );
+
+  print('Response status: ${response.statusCode}');
+  print('Response body: ${response.body}');
 
   if (response.statusCode == 200) {
     sharedPreferences!.setStringList("userCart", emptyList!);

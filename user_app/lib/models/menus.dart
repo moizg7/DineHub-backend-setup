@@ -3,7 +3,6 @@ class Menus {
   String? sellerUID;
   String? menuTitle;
   String? menuInfo;
-  String? publishedDate;
   String? thumbnailUrl;
   String? status;
 
@@ -14,7 +13,6 @@ class Menus {
     this.menuInfo,
     this.thumbnailUrl,
     this.status,
-    this.publishedDate,
   });
 
   Menus.fromJson(Map<String, dynamic> json) {
@@ -24,7 +22,6 @@ class Menus {
     menuInfo = json["menuInfo"];
     thumbnailUrl = json["thumbnailUrl"];
     status = json["status"];
-    publishedDate = json["publishedDate"];
     print("Menus.fromJson: menuId = $menuId"); // Debug print
   }
 
@@ -34,7 +31,6 @@ class Menus {
     data["sellerUID"] = sellerUID;
     data["menuTitle"] = menuTitle;
     data["menuInfo"] = menuInfo;
-    data["publishedDate"] = publishedDate;
     data["thumbnailUrl"] = thumbnailUrl;
     data["status"] = status;
     return data;

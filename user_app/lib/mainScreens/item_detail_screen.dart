@@ -36,7 +36,7 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
               padding: const EdgeInsets.all(8.0),
               child: NumberInputPrefabbed.roundedButtons(
                 controller: counterTextEditingController,
-                incDecBgColor: const Color.fromARGB(255, 57, 65, 179),
+                incDecBgColor: Color.fromARGB(255, 117, 112, 139),
                 min: 1,
                 max: 9,
                 initialValue: 1,
@@ -50,6 +50,7 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 20,
+                  fontFamily: "Poppins",
                 ),
               ),
             ),
@@ -61,6 +62,7 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
                 style: const TextStyle(
                   fontWeight: FontWeight.normal,
                   fontSize: 14,
+                  fontFamily: "Poppins",
                 ),
               ),
             ),
@@ -71,6 +73,7 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 26,
+                  fontFamily: "Poppins",
                 ),
               ),
             ),
@@ -83,9 +86,9 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
                   int itemCounter =
                       int.parse(counterTextEditingController.text);
 
-                  List<String> seprateItemIdsList = separateItemIds();
+                  List<String> separateItemIdsList = separateItemIds();
 
-                  seprateItemIdsList.contains(widget.model!.itemId)
+                  separateItemIdsList.contains(widget.model!.itemId)
                       ? Fluttertoast.showToast(msg: "Item is already in cart")
                       : addItemToCart(
                           widget.model!.itemId, context, itemCounter);
@@ -94,8 +97,8 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
                   decoration: const BoxDecoration(
                     gradient: LinearGradient(
                       colors: [
-                        Color.fromRGBO(2, 3, 129, 1),
-                        Color.fromRGBO(2, 3, 129, 1)
+                        Color(0xFF261E92),
+                        Color(0xFF261E92),
                       ],
                       begin: FractionalOffset(0.0, 0.0),
                       end: FractionalOffset(1.0, 0.0),
@@ -108,7 +111,10 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
                   child: const Center(
                     child: Text(
                       "Add to Cart",
-                      style: TextStyle(color: Colors.white, fontSize: 15),
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 15,
+                          fontFamily: "Poppins"),
                     ),
                   ),
                 ),

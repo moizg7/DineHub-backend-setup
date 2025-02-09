@@ -43,3 +43,13 @@ exports.deleteSeller = async (req, res, next) => {
     res.status(400).json({ status: false, message: error.message });
   }
 };
+
+exports.findSeller = async (req, res, next) => {
+  try {
+    const { searchTerm } = req.body;
+    const sellers = await SellerService.findSellersByName(searchTerm);
+    res.json(sellers);
+  } catch (error) {
+    res.status(400).json({ status: false, message: error.message });
+  }
+};

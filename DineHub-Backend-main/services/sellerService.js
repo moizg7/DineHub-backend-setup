@@ -99,6 +99,15 @@ class SellerService {
     }
   }
 
+  static async findSellersByName(searchTerm) {
+    try {
+      const regex = new RegExp(searchTerm, 'i'); // Case-insensitive search
+      const sellers = await SellerModel.find({ name: regex });
+      return sellers;
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
 }
 
 module.exports = SellerService;

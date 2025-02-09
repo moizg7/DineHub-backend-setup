@@ -70,8 +70,8 @@ class _MenusScreenState extends State<MenusScreen> {
           decoration: const BoxDecoration(
             gradient: LinearGradient(
               colors: [
-                Color.fromRGBO(2, 3, 129, 1),
-                Color.fromRGBO(2, 3, 129, 1)
+                Color(0xFF261E92),
+                Color(0xFF261E92),
               ],
               begin: FractionalOffset(0.0, 0.0),
               end: FractionalOffset(1.0, 0.0),
@@ -83,8 +83,8 @@ class _MenusScreenState extends State<MenusScreen> {
         title: const Text(
           "DineHub",
           style: TextStyle(
-            fontFamily: "Train",
-            fontSize: 40,
+            fontFamily: "Poppins",
+            fontSize: 24,
             color: Colors.white, // Change this to your desired color
           ),
         ),

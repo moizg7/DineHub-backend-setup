@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import '../models/items.dart';
 
 class CartItemDesign extends StatefulWidget {
@@ -24,19 +23,20 @@ class _CartItemDesignState extends State<CartItemDesign> {
     return InkWell(
       onTap: () {},
       child: Padding(
-        padding: EdgeInsets.all(6),
+        padding: const EdgeInsets.symmetric(
+            vertical: 2, horizontal: 4), // Adjust padding
         child: Container(
-          height: 165,
+          height: 120, // Adjust height
           width: MediaQuery.of(context).size.width,
           child: Row(
             children: [
               Image.network(
                 widget.model!.thumbnailUrl!,
                 width: 100,
-                height: 120,
+                height: 100,
               ),
               const SizedBox(
-                width: 6,
+                width: 4,
               ),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -46,47 +46,50 @@ class _CartItemDesignState extends State<CartItemDesign> {
                     widget.model!.title!,
                     style: const TextStyle(
                       color: Colors.black,
-                      fontSize: 16,
-                      fontFamily: "kiwi",
+                      fontSize: 18,
+                      fontFamily: "Poppins-Bold",
                     ),
                   ),
                   const SizedBox(
-                    height: 1,
+                    height: 2, // Adjust spacing
                   ),
                   Row(
                     children: [
                       const Text(
-                        "x",
+                        "x ",
                         style: TextStyle(
                           color: Colors.black,
-                          fontSize: 16,
-                          fontFamily: "Acme",
+                          fontSize: 14,
+                          fontFamily: "Poppins-Italic",
                         ),
                       ),
                       Text(
                         widget.quanNumber.toString(),
                         style: const TextStyle(
                           color: Colors.black,
-                          fontSize: 16,
-                          fontFamily: "Acme",
+                          fontSize: 14,
+                          fontFamily: "Poppins-Bold",
                         ),
                       ),
                     ],
                   ),
+                  const SizedBox(
+                    height: 2, // Adjust spacing
+                  ),
                   Row(
                     children: [
                       const Text(
-                        "Price",
-                        style: TextStyle(fontSize: 16, color: Colors.blue),
+                        "Price : ",
+                        style: TextStyle(fontSize: 14, color: Colors.blue),
                       ),
                       const Text(
-                        "₹",
-                        style: TextStyle(fontSize: 16, color: Colors.blue),
+                        "Rs ",
+                        style: TextStyle(fontSize: 14, color: Colors.blue),
                       ),
                       Text(
                         widget.model!.price.toString(),
                         style:
-                            const TextStyle(fontSize: 16, color: Colors.blue),
+                            const TextStyle(fontSize: 14, color: Colors.blue),
                       )
                     ],
                   )

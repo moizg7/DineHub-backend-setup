@@ -17,7 +17,6 @@ class _SellersDesignWidgetState extends State<SellersDesignWidget> {
   Widget build(BuildContext context) {
     print('Seller Model Data:');
     print('Name: ${widget.model?.sellerName}');
-    print('Email: ${widget.model?.sellerEmail}');
     print('Photo URL: ${widget.model?.photoUrl}');
 
     return InkWell(
@@ -93,16 +92,10 @@ class _SellersDesignWidgetState extends State<SellersDesignWidget> {
             Text(
               widget.model?.sellerName ?? 'Unknown Seller',
               style: const TextStyle(
-                  color: Color.fromARGB(255, 64, 140, 255),
-                  fontSize: 20,
-                  fontFamily: "Times New Roman"),
-            ),
-            Text(
-              widget.model?.sellerEmail ?? 'No Email',
-              style: const TextStyle(
-                  color: Colors.grey,
-                  fontSize: 20,
-                  fontFamily: "Times New Roman"),
+                color: Color.fromARGB(255, 64, 140, 255),
+                fontSize: 20,
+                fontFamily: "Poppins",
+              ),
             ),
             Divider(
               height: 4,
