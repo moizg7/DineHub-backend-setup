@@ -6,6 +6,9 @@ final clearCart = url + "cart/clear";
 final getCart = url + "cart/"; // Add this line for fetching the cart
 final getmenu = url + "menu/"; // Append sellerUID when making the request
 final getitem = url + "item/"; // Add this line if it's not already there
+final addAddress = url + "address/add"; // Add this line for adding an address
+final getAddresses = url + "address/"; // Add this line for fetching addresses
+final placeOrder = url + "order/place"; // Add this line for placing an order
 
 const String API_BASE = 'http://192.168.1.107:3000/';
 const String getSellers = API_BASE + 'seller/getsellers';

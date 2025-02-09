@@ -75,75 +75,6 @@ class _CartScreenState extends State<CartScreen> {
     }
   }
 
-  void _handlePayment() async {
-    // Show loading spinner while payment is processing
-    showDialog(
-      context: context,
-      barrierDismissible:
-          false, // Prevent dismissing the dialog by tapping outside
-      builder: (BuildContext context) {
-        return Center(
-          child: CircularProgressIndicator(), // The loading spinner
-        );
-      },
-    );
-
-    try {
-      // Trigger Paymob payment process
-      PaymobPayment.instance.pay(
-        context: context,
-        currency: "PKR",
-        amountInCents: (totolAmmount * 100).toString(), // Convert to cents
-        onPayment: (PaymobResponse res) {
-          Navigator.of(context).pop(); // Close the loading spinner
-          setState(() => response = res);
-
-          if (res.success) {
-            // Navigate to the AddressScreen on successful payment
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => AddressScreen(
-                  totolAmmount: totolAmmount.toDouble(),
-                  sellerUID: widget.sellerUID,
-                ),
-              ),
-            );
-          } else {
-            // Check for specific issues like token being null
-            String errorMessage =
-                res.message ?? "Payment failed for an unknown reason.";
-            if (errorMessage.contains("Token")) {
-              errorMessage =
-                  "Payment failed due to an authentication issue. Please try again.";
-            }
-            Fluttertoast.showToast(msg: errorMessage);
-          }
-        },
-      );
-
-      if (response != null && response!.success) {
-        // Navigate to AddressScreen on successful payment
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => AddressScreen(
-              totolAmmount: totolAmmount.toDouble(),
-              sellerUID: widget.sellerUID,
-            ),
-          ),
-        );
-      } else {
-        Fluttertoast.showToast(
-            msg: "Payment failed: ${response?.message ?? 'Unknown error'}");
-      }
-    } catch (e) {
-      Navigator.of(context)
-          .pop(); // Close the loading spinner in case of an error
-      Fluttertoast.showToast(msg: "Payment error: $e");
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -209,7 +140,8 @@ class _CartScreenState extends State<CartScreen> {
               label: const Text(
                 "Clear Cart",
                 style: TextStyle(
-                    color: Colors.white), // Change text color to white
+                    color: Colors.white,
+                    fontFamily: "Poppins"), // Change text color to white
               ),
               backgroundColor: Color(0xFF261E92),
               icon: const Icon(Icons.clear_all,
@@ -220,11 +152,22 @@ class _CartScreenState extends State<CartScreen> {
             alignment: Alignment.bottomRight,
             child: FloatingActionButton.extended(
               heroTag: 'btn2',
-              onPressed: _handlePayment, // Handle payment on press
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => AddressScreen(
+                      totolAmmount: totolAmmount.toDouble(),
+                      sellerUID: widget.sellerUID,
+                    ),
+                  ),
+                );
+              }, // Directly navigate to AddressScreen
               label: const Text(
                 "Check Out",
                 style: TextStyle(
-                    color: Colors.white), // Change text color to white
+                    color: Colors.white,
+                    fontFamily: "Poppins"), // Change text color to white
               ),
               backgroundColor: Color(0xFF261E92),
               icon: const Icon(Icons.navigate_next,

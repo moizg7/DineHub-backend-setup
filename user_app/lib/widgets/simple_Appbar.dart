@@ -17,7 +17,7 @@ class SimpleAppBar extends StatelessWidget implements PreferredSizeWidget {
       flexibleSpace: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            colors: [Colors.red, Colors.redAccent],
+            colors: [Color(0xFF261E92), Color(0xFF261E92)],
             begin: FractionalOffset(0.0, 0.0),
             end: FractionalOffset(1.0, 0.0),
             stops: [0.0, 1.0],
@@ -27,10 +27,14 @@ class SimpleAppBar extends StatelessWidget implements PreferredSizeWidget {
       ),
       title: Text(
         title!,
-        style: const TextStyle(fontSize: 45, fontFamily: "Signatra"),
+        style: const TextStyle(
+            fontSize: 24, fontFamily: "Poppins", color: Colors.white),
       ),
       centerTitle: true,
       automaticallyImplyLeading: true,
+      iconTheme: const IconThemeData(
+        color: Colors.white, // Change back button color to white
+      ),
       actions: [],
     );
   }

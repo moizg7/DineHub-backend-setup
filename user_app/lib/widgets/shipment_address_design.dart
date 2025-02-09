@@ -31,19 +31,19 @@ class ShipmentAddressDesign extends StatelessWidget {
                 TableRow(
                   children: [
                     const Text(
-                      "Name",
+                      "Room No",
                       style: TextStyle(color: Colors.black),
                     ),
-                    Text(model!.name.toString()),
+                    Text(model!.roomNo.toString()),
                   ],
                 ),
                 TableRow(
                   children: [
                     const Text(
-                      "Phone Number",
+                      "Hostel",
                       style: TextStyle(color: Colors.black),
                     ),
-                    Text(model!.phoneNumber!),
+                    Text(model!.hostel.toString()),
                   ],
                 ),
               ],
@@ -56,7 +56,7 @@ class ShipmentAddressDesign extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.all(18.0),
           child: Text(
-            model!.fullAddress!,
+            "Room No: ${model!.roomNo}, Hostel: ${model!.hostel}",
             textAlign: TextAlign.justify,
           ),
         ),

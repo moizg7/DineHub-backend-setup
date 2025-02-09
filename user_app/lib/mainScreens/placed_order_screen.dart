@@ -1,9 +1,12 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 import 'package:user_app/assistant_methods/assistant_methods.dart';
 import 'package:user_app/global/global.dart';
 import 'package:user_app/mainScreens/home_screen.dart';
+import '../config.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class PlacedOrderScreen extends StatefulWidget {
   String? addressID;
@@ -19,64 +22,50 @@ class PlacedOrderScreen extends StatefulWidget {
 
 class _PlacedOrderScreenState extends State<PlacedOrderScreen> {
   String orderId = DateTime.now().microsecondsSinceEpoch.toString();
-  addOrderDetails() {
-    writeOrderDetailsForUser({
-      "addressId": widget.addressID,
-      "totolAmmount": widget.totolAmmount,
-      "orderedBy": sharedPreferences!.getString("uid"),
-      "productIds": sharedPreferences!.getStringList("userCart"),
-      "paymentDetails": "Cash on Delivery",
-      "orderTime": orderId,
-      "isSuccess": true,
-      "sellerUID": widget.sellerUID,
-      "riderUID": "",
-      "status": "normal",
-      "orderId": orderId,
-    });
 
-    writeOrderDetailsForSeller({
-      "addressId": widget.addressID,
-      "totolAmmount": widget.totolAmmount,
-      "orderedBy": sharedPreferences!.getString("uid"),
-      "productIds": sharedPreferences!.getStringList("userCart"),
-      "paymentDetails": "Cash on Delivery",
-      "orderTime": orderId,
-      "isSuccess": true,
-      "sellerUID": widget.sellerUID,
-      "riderUID": "",
-      "status": "normal",
-      "orderId": orderId,
-    }).whenComplete(() {
-      clearCartNow(context);
-      setState(() {
-        orderId = "";
+  Future<void> addOrderDetails() async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    String? userId = sharedPreferences.getString("uid");
 
-        Navigator.push(context,
-            MaterialPageRoute(builder: (context) => const HomeScreen()));
-        Fluttertoast.showToast(
-            msg: "Congratulations, Order has been placed Successfully");
-      });
-    });
-  }
+    if (userId == null) {
+      Fluttertoast.showToast(msg: "User ID is null");
+      return;
+    }
 
-  Future writeOrderDetailsForUser(
-    Map<String, dynamic> data,
-  ) async {
-    await FirebaseFirestore.instance
-        .collection("users")
-        .doc(sharedPreferences!.getString("uid"))
-        .collection("orders")
-        .doc(orderId)
-        .set(data);
-  }
+    final orderData = {
+      "userId": userId,
+      "address": {
+        "addressId": widget.addressID,
+      },
+      "paymentType": "Cash on Delivery",
+      "approximateTime": orderId,
+    };
 
-  Future writeOrderDetailsForSeller(
-    Map<String, dynamic> data,
-  ) async {
-    await FirebaseFirestore.instance
-        .collection("orders")
-        .doc(orderId)
-        .set(data);
+    final response = await http.post(
+      Uri.parse(placeOrder),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(orderData),
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      if (data['status'] == true) {
+        clearCartNow(context);
+        setState(() {
+          orderId = "";
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => const HomeScreen()));
+          Fluttertoast.showToast(
+              msg: "Congratulations, Order has been placed Successfully");
+        });
+      } else {
+        Fluttertoast.showToast(msg: "Failed to place order");
+      }
+    } else {
+      Fluttertoast.showToast(msg: "Failed to place order");
+    }
   }
 
   @override
