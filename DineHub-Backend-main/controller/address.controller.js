@@ -20,6 +20,16 @@ exports.getAddresses = async (req, res, next) => {
     }
 }
 
+exports.getAddressById = async (req, res, next) => {
+    try {
+        const { addressId } = req.params;
+        const response = await AddressServices.getAddressById(addressId);
+        res.json(response);
+    } catch (error) {
+        res.status(400).json({ status: false, message: error.message });
+    }
+}
+
 exports.removeAddress = async (req, res, next) => {
     try {
         const { userId, addressId } = req.body;

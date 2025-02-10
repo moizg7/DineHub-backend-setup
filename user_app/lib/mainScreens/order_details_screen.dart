@@ -1,15 +1,15 @@
-// ignore_for_file: prefer_interpolation_to_compose_strings
-
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:user_app/models/address.dart';
-
 import 'package:user_app/widgets/progress_bar.dart';
 import 'package:user_app/widgets/shipment_address_design.dart';
 import 'package:user_app/widgets/status_banner.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 import '../global/global.dart';
+import '../config.dart';
 
 class OrderDetailsScreen extends StatefulWidget {
   final String? orderId;
@@ -22,98 +22,149 @@ class OrderDetailsScreen extends StatefulWidget {
 
 class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
   String orderStatus = "";
+  Map<String, dynamic>? orderData;
+  Map<String, dynamic>? addressData;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchOrderDetails();
+  }
+
+  Future<void> fetchOrderDetails() async {
+    print("Fetching order details for orderId: ${widget.orderId}");
+    final response = await http.get(
+      Uri.parse(getOrderDetails + widget.orderId!),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
+
+    print("Response status code: ${response.statusCode}");
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      print("Response data: $data");
+      if (data['status'] == true && data['order'] != null) {
+        setState(() {
+          orderData = data['order'];
+          orderStatus = orderData?['orderStatus'] ?? 'Unknown';
+          print("Order data: $orderData");
+          print("Order status: $orderStatus");
+          String addressId = orderData?['address']?['addressId'] ?? '';
+          print("Address ID: $addressId");
+          if (addressId.isNotEmpty) {
+            fetchAddressDetails(addressId);
+          } else {
+            Fluttertoast.showToast(msg: "Invalid address ID");
+          }
+        });
+      } else {
+        print(
+            "Failed to fetch order details: ${data['status']}, ${data['order']}");
+        Fluttertoast.showToast(msg: "Failed to fetch order details");
+      }
+    } else {
+      print("Failed to fetch order details: ${response.statusCode}");
+      Fluttertoast.showToast(msg: "Failed to fetch order details");
+    }
+  }
+
+  Future<void> fetchAddressDetails(String addressId) async {
+    print("Fetching address details for addressId: $addressId");
+    final response = await http.get(
+      Uri.parse(getAddressDetails + addressId),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
+
+    print("Response status code: ${response.statusCode}");
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      print("Response data: $data");
+      if (data['status'] == true) {
+        setState(() {
+          addressData = data['address'];
+          print("Address data: $addressData");
+        });
+      } else {
+        print("Failed to fetch address details: ${data['status']}");
+        Fluttertoast.showToast(msg: "Failed to fetch address details");
+      }
+    } else {
+      print("Failed to fetch address details: ${response.statusCode}");
+      print("Response body: ${response.body}");
+      Fluttertoast.showToast(msg: "Failed to fetch address details");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-        child: FutureBuilder<DocumentSnapshot>(
-          future: FirebaseFirestore.instance
-              .collection("users")
-              .doc(sharedPreferences?.getString("uid"))
-              .collection("orders")
-              .doc(widget.orderId)
-              .get(),
-          builder: (c, snapshot) {
-            Map? dataMap;
-            if (snapshot.hasData) {
-              dataMap = snapshot.data!.data()! as Map<String, dynamic>;
-              orderStatus = dataMap["status"].toString();
-            }
-            return snapshot.hasData
-                ? Container(
-                    child: Column(
-                      children: [
-                        StatusBanner(
-                            status: dataMap!["isSuccess"],
-                            orderStatus: orderStatus),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Align(
-                            alignment: Alignment.topLeft,
-                            child: Text(
-                              "₹${dataMap["totolAmmount"]}",
-                              style: const TextStyle(
-                                  fontSize: 20, fontWeight: FontWeight.bold),
+      body: Column(
+        children: [
+          StatusBanner(orderStatus: orderStatus),
+          Expanded(
+            child: SingleChildScrollView(
+              child: orderData == null
+                  ? Center(child: circularProgress())
+                  : Container(
+                      child: Column(
+                        children: [
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Align(
+                              alignment: Alignment.topLeft,
+                              child: Text(
+                                "Rs ${orderData!["totalAmount"]}",
+                                style: const TextStyle(
+                                    fontSize: 20, fontWeight: FontWeight.bold),
+                              ),
                             ),
                           ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(
-                            "Order Id =${widget.orderId!}",
-                            style: const TextStyle(fontSize: 16),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                              "Order Id =${widget.orderId!}",
+                              style: const TextStyle(fontSize: 16),
+                            ),
                           ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(
-                            "Order at: " +
-                                DateFormat("dd MMMM yyyy hh:mm aa").format(
-                                  DateTime.fromMillisecondsSinceEpoch(
-                                    int.parse(dataMap["orderTime"]),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                              "Order at: " +
+                                  DateFormat("dd MMMM yyyy hh:mm aa").format(
+                                    DateTime.fromMillisecondsSinceEpoch(
+                                      DateTime.parse(orderData!["createdAt"])
+                                          .millisecondsSinceEpoch,
+                                    ),
                                   ),
-                                ),
-                            style: const TextStyle(
-                                fontSize: 15, color: Colors.grey),
+                              style: const TextStyle(
+                                  fontSize: 15, color: Colors.grey),
+                            ),
                           ),
-                        ),
-                        const Divider(
-                          thickness: 4,
-                        ),
-                        orderStatus == "ended"
-                            ? Image.asset('assets/images/delivered.jpg')
-                            : Image.asset('assets/images/state.jpg'),
-                        const Divider(
-                          thickness: 4,
-                        ),
-                        FutureBuilder<DocumentSnapshot>(
-                          future: FirebaseFirestore.instance
-                              .collection("users")
-                              .doc(sharedPreferences!.getString("uid"))
-                              .collection("userAddress")
-                              .doc(dataMap["addressId"])
-                              .get(),
-                          builder: (context, snapshot) {
-                            return snapshot.hasData
-                                ? ShipmentAddressDesign(
-                                    model: Address.fromJson(snapshot.data!
-                                        .data()! as Map<String, dynamic>))
-                                : Center(
-                                    child: circularProgress(),
-                                  );
-                          },
-                        ),
-                      ],
+                          const Divider(
+                            thickness: 4,
+                          ),
+                          orderStatus == "ended"
+                              ? Image.asset('assets/images/delivered.jpg')
+                              : Image.asset('assets/images/state.jpg'),
+                          const Divider(
+                            thickness: 4,
+                          ),
+                          addressData == null
+                              ? Center(child: circularProgress())
+                              : ShipmentAddressDesign(
+                                  model: Address.fromJson(addressData!)),
+                        ],
+                      ),
                     ),
-                  )
-                : Center(
-                    child: circularProgress(),
-                  );
-          },
-        ),
+            ),
+          ),
+        ],
       ),
     );
   }

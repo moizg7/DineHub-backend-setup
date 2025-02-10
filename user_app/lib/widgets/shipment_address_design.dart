@@ -74,7 +74,10 @@ class ShipmentAddressDesign extends StatelessWidget {
                 alignment: Alignment.center,
                 decoration: const BoxDecoration(
                   gradient: LinearGradient(
-                    colors: [Colors.pinkAccent, Colors.redAccent],
+                    colors: [
+                      Color(0xFF261E92),
+                      Color(0xFF261E92),
+                    ],
                     begin: FractionalOffset(0.0, 0.0),
                     end: FractionalOffset(1.0, 0.0),
                     stops: [0.0, 1.0],

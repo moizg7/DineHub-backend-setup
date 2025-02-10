@@ -15,7 +15,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 // Use Multer middleware in the register route to handle file upload
-router.post("/seller/register", upload.single('photo'), SellerController.register);
+router.post("/seller/register", upload.single('photoUrl'), SellerController.register);
 
 router.post("/seller/login", SellerController.login); // New login route added
 

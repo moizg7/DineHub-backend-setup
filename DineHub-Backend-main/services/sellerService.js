@@ -23,12 +23,9 @@ class SellerService {
         email,
         password,
         phone,
-        address
+        address,
+        photoUrl
       };
-
-      if (photoUrl) {
-        sellerData.photoUrl = photoUrl;
-      }
 
       const createSeller = new SellerModel(sellerData);
       await createSeller.save();

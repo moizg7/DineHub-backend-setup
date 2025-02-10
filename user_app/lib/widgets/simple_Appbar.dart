@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class SimpleAppBar extends StatelessWidget implements PreferredSizeWidget {
-  String? title;
-
+  final String? title;
   final PreferredSizeWidget? bottom;
 
   SimpleAppBar({this.bottom, this.title});
+
   @override
   Size get preferredSize => bottom == null
       ? Size(56, AppBar().preferredSize.height)
@@ -13,6 +14,11 @@ class SimpleAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Set the status bar color to match the app bar color
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+      statusBarColor: Color(0xFF261E92), // Set the status bar color
+    ));
+
     return AppBar(
       flexibleSpace: Container(
         decoration: const BoxDecoration(
@@ -25,6 +31,12 @@ class SimpleAppBar extends StatelessWidget implements PreferredSizeWidget {
           ),
         ),
       ),
+      leading: IconButton(
+        onPressed: () {
+          Navigator.pop(context);
+        },
+        icon: const Icon(Icons.arrow_back, color: Colors.white),
+      ),
       title: Text(
         title!,
         style: const TextStyle(
@@ -32,9 +44,6 @@ class SimpleAppBar extends StatelessWidget implements PreferredSizeWidget {
       ),
       centerTitle: true,
       automaticallyImplyLeading: true,
-      iconTheme: const IconThemeData(
-        color: Colors.white, // Change back button color to white
-      ),
       actions: [],
     );
   }

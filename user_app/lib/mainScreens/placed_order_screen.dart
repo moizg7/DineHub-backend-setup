@@ -34,11 +34,12 @@ class _PlacedOrderScreenState extends State<PlacedOrderScreen> {
 
     final orderData = {
       "userId": userId,
+      "sellerId": widget.sellerUID, // Include sellerUID
       "address": {
         "addressId": widget.addressID,
       },
       "paymentType": "Cash on Delivery",
-      "approximateTime": orderId,
+      "approximateTime": "45 minutes",
     };
 
     final response = await http.post(
@@ -74,7 +75,7 @@ class _PlacedOrderScreenState extends State<PlacedOrderScreen> {
       child: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            colors: [Colors.white, Colors.red],
+            colors: [Colors.white, Color(0xFF261E92)],
             begin: FractionalOffset(0.0, 0.0),
             end: FractionalOffset(1.0, 0.0),
             stops: [0.0, 1.0],
@@ -88,8 +89,14 @@ class _PlacedOrderScreenState extends State<PlacedOrderScreen> {
             onPressed: () {
               addOrderDetails();
             },
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent),
-            child: const Text('Place order'),
+            style: ElevatedButton.styleFrom(backgroundColor: Color(0xFF261E92)),
+            child: const Text(
+              'Place order',
+              style: TextStyle(
+                color: Colors.white, // Change text color to white
+                fontFamily: "Poppins", // Use Poppins font
+              ),
+            ),
           )
         ]),
       ),

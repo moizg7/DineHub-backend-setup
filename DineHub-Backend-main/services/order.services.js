@@ -1,10 +1,10 @@
 const OrderModel = require("../models/order.model");
 const UserModel = require("../models/user.model");
 const ItemModel = require("../models/item.model");
+const SellerModel = require("../models/sellermodel"); // Import SellerModel
 
 class OrderServices {
-    
-    static async placeOrder(userId, address, paymentType, approximateTime) {
+    static async placeOrder(userId, sellerId, address, paymentType, approximateTime) {
         try {
             const user = await UserModel.findById(userId);
             if (!user) {
@@ -22,6 +22,7 @@ class OrderServices {
 
             const orderData = {
                 userId,
+                sellerId, // Include sellerId
                 cart: user.cart,
                 address,
                 paymentType,
@@ -71,9 +72,31 @@ class OrderServices {
         }
     }
 
+    static async getOrderDetails(orderId) {
+        try {
+            const order = await OrderModel.findById(orderId).lean();
+            if (!order) {
+                throw new Error("Order not found");
+            }
+            return { status: true, order };
+        } catch (err) {
+            throw err;
+        }
+    }
+
     static async getRecentOrders(userId) {
         try {
             const orders = await OrderModel.find({ userId }).sort({ createdAt: -1 }).limit(5).lean();
+
+            // Fetch seller information for each order
+            for (const order of orders) {
+                const seller = await SellerModel.findById(order.sellerId); // Assuming sellerId is stored in the order
+                if (seller) {
+                    order.sellerName = seller.name;
+                    order.sellerImage = seller.photoUrl;
+                }
+            }
+
             return { status: true, orders };
         } catch (err) {
             throw err;

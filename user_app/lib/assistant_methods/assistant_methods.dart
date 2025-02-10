@@ -96,20 +96,12 @@ Future<void> addItemToCart(
   }
 }
 
-separateOrderItemQuantities(orderId) {
+List<String> separateOrderItemQuantities(List<dynamic> orderItems) {
   List<String> separateItemQuantityList = [];
-  List<String> defaultItemList = [];
 
-  defaultItemList = List<String>.from(orderId);
-
-  for (int i = 1; i < defaultItemList.length; i++) {
-    String item = defaultItemList[i].toString();
-
-    List<String> listItemCharacters = item.split(":").toList();
-
-    var quanNumber = int.parse(listItemCharacters[1].toString());
-
-    separateItemQuantityList.add(quanNumber.toString());
+  for (var item in orderItems) {
+    String quantity = item['quantity'].toString();
+    separateItemQuantityList.add(quantity);
   }
 
   return separateItemQuantityList;

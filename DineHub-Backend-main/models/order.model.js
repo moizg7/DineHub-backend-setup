@@ -6,6 +6,7 @@ const { Schema } = mongoose;
 // Define the order schema
 const orderSchema = new Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: 'user', required: true },
+  sellerId: { type: mongoose.Schema.Types.ObjectId, ref: 'seller', required: true }, // Add sellerId field
   cart: { type: Array, required: true },
   address: { type: Object, required: true },
   paymentType: { type: String, required: true },
