@@ -1,12 +1,15 @@
 // ignore_for_file: prefer_interpolation_to_compose_strings
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:seller_app/model/address.dart';
 import 'package:seller_app/widgets/progress_bar.dart';
 import 'package:seller_app/widgets/shipment_address_design.dart';
 import 'package:seller_app/widgets/status_banner.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:seller_app/config.dart';
+import 'package:seller_app/widgets/simple_Appbar.dart';
 
 class OrderDetailsScreen extends StatefulWidget {
   final String? orderId;
@@ -19,124 +22,191 @@ class OrderDetailsScreen extends StatefulWidget {
 
 class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
   String orderStatus = "";
-  String orderByUser = "";
-  String sellerId = "";
-
-  getOrderInfo() {
-    FirebaseFirestore.instance
-        .collection('orders')
-        .doc(widget.orderId)
-        .get()
-        .then((DocumentSnapshot) {
-      orderStatus = DocumentSnapshot.data()!['status'].toString();
-      orderByUser = DocumentSnapshot.data()!['orderedBy'].toString();
-
-      sellerId = DocumentSnapshot.data()!['sellerUID'].toString();
-    });
-  }
+  Map<String, dynamic>? orderData;
+  Map<String, dynamic>? addressData;
+  String approximateTime = "";
 
   @override
   void initState() {
     super.initState();
-    getOrderInfo();
+    fetchOrderDetails();
+  }
+
+  Future<void> fetchOrderDetails() async {
+    print("moiz: Fetching order details for orderId: ${widget.orderId}");
+    final response = await http.get(
+      Uri.parse(getOrderDetails + widget.orderId!),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
+
+    print("moiz: Response status code: ${response.statusCode}");
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      print("moiz: Response data: $data");
+      if (data['status'] == true && data['order'] != null) {
+        setState(() {
+          orderData = data['order'];
+          orderStatus = orderData?['orderStatus'] ?? 'Unknown';
+          print("moiz: Order data: $orderData");
+          print("moiz: Order status: $orderStatus");
+          String addressId = orderData?['address']?['addressId'] ?? '';
+          print("moiz: Address ID: $addressId");
+          if (addressId.isNotEmpty) {
+            fetchAddressDetails(addressId);
+          } else {
+            print("moiz: Invalid address ID");
+          }
+        });
+      } else {
+        print(
+            "moiz: Failed to fetch order details: ${data['status']}, ${data['order']}");
+      }
+    } else {
+      print("moiz: Failed to fetch order details: ${response.statusCode}");
+    }
+  }
+
+  Future<void> fetchAddressDetails(String addressId) async {
+    print("moiz: Fetching address details for addressId: $addressId");
+    final response = await http.get(
+      Uri.parse(getUserAddress + addressId),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
+
+    print("moiz: Response status code: ${response.statusCode}");
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      print("moiz: Response data: $data");
+      if (data['status'] == true) {
+        setState(() {
+          addressData = data['address'];
+          print("moiz: Address data: $addressData");
+        });
+      } else {
+        print("moiz: Failed to fetch address details: ${data['status']}");
+      }
+    } else {
+      print("moiz: Failed to fetch address details: ${response.statusCode}");
+      print("moiz: Response body: ${response.body}");
+    }
+  }
+
+  Future<void> updateOrderStatus(String status) async {
+    final response = await http.post(
+      Uri.parse(updateOrderStat),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode({
+        'orderId': widget.orderId,
+        'status': status,
+        'approximateTime': approximateTime,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      if (data['status'] == true) {
+        setState(() {
+          orderStatus = status;
+        });
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    print(
+        "moiz: Building OrderDetailsScreen with orderStatus: $orderStatus and addressData: $addressData");
     return Scaffold(
-      body: SingleChildScrollView(
-        child: FutureBuilder<DocumentSnapshot>(
-          future: FirebaseFirestore.instance
-              .collection("orders")
-              .doc(widget.orderId)
-              .get(),
-          builder: (c, snapshot) {
-            Map? dataMap;
-            if (snapshot.hasData) {
-              dataMap = snapshot.data!.data()! as Map<String, dynamic>;
-              orderStatus = dataMap["status"].toString();
-            }
-            return snapshot.hasData
-                ? Container(
-                    child: Column(
-                      children: [
-                        StatusBanner(
-                            status: dataMap!["isSuccess"],
-                            orderStatus: orderStatus),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Align(
-                            alignment: Alignment.topLeft,
-                            child: Text(
-                              "₹${dataMap["totolAmmount"]}",
-                              style: const TextStyle(
-                                  fontSize: 20, fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(
-                            "Order Id =${widget.orderId!}",
-                            style: const TextStyle(fontSize: 16),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(
-                            "Order at: " +
-                                DateFormat("dd MMMM yyyy hh:mm aa").format(
-                                  DateTime.fromMillisecondsSinceEpoch(
-                                    int.parse(dataMap["orderTime"]),
-                                  ),
-                                ),
-                            style: const TextStyle(
-                                fontSize: 15, color: Colors.grey),
-                          ),
-                        ),
-                        const Divider(
-                          thickness: 4,
-                        ),
-                        orderStatus != "ended"
-                            ? Image.asset('assets/images/packing.png')
-                            : Image.asset('assets/images/delivered.jpg'),
-                        const Divider(
-                          thickness: 4,
-                        ),
-                        FutureBuilder<DocumentSnapshot>(
-                          future: FirebaseFirestore.instance
-                              .collection("users")
-                              .doc(orderByUser)
-                              .collection("userAddress")
-                              .doc(dataMap["addressId"])
-                              .get(),
-                          builder: (context, snapshot) {
-                            return snapshot.hasData
-                                ? ShipmentAddressDesign(
-                                    model: Address.fromJson(snapshot.data!
-                                        .data()! as Map<String, dynamic>),
-                                    orderStatus: orderStatus,
-                                    orderId: widget.orderId,
-                                    sellerId: sellerId,
-                                    orderByUser: orderByUser,
-                                  )
-                                : Center(
-                                    child: circularProgress(),
-                                  );
-                          },
-                        ),
-                      ],
-                    ),
-                  )
-                : Center(
-                    child: circularProgress(),
-                  );
-          },
-        ),
+      appBar: SimpleAppBar(
+        title: "Order Details",
       ),
+      body: orderData == null
+          ? Center(child: circularProgress())
+          : Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Order ID: ${widget.orderId}",
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontFamily: "Poppins",
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    "Address: ${addressData?['RoomNo'] ?? 'Unknown'}, ${addressData?['Hostel'] ?? 'Unknown'}",
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontFamily: "Poppins",
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  if (orderStatus == "pending") ...[
+                    TextField(
+                      decoration: const InputDecoration(
+                        labelText: "Approximate Time (in minutes)",
+                        border: OutlineInputBorder(),
+                      ),
+                      keyboardType: TextInputType.number,
+                      onChanged: (value) {
+                        approximateTime = value;
+                      },
+                    ),
+                    const SizedBox(height: 20),
+                    ElevatedButton(
+                      onPressed: () {
+                        updateOrderStatus("accepted");
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color(0xFF261E92),
+                      ),
+                      child: const Text(
+                        'Accept Order',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontFamily: "Poppins",
+                        ),
+                      ),
+                    ),
+                  ] else if (orderStatus == "accepted") ...[
+                    ElevatedButton(
+                      onPressed: () {
+                        updateOrderStatus("on way");
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color(0xFF261E92),
+                      ),
+                      child: const Text(
+                        'Cooked',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontFamily: "Poppins",
+                        ),
+                      ),
+                    ),
+                  ] else if (orderStatus == "on way") ...[
+                    const Center(
+                      child: Text(
+                        "Order is on the way",
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: "Poppins",
+                        ),
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
     );
   }
 }

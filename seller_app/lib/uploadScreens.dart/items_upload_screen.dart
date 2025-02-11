@@ -35,8 +35,8 @@ class _ItemsUploadScreenState extends State<ItemsUploadScreen> {
           decoration: const BoxDecoration(
             gradient: LinearGradient(
               colors: [
-                Color.fromRGBO(2, 3, 129, 1),
-                Color.fromRGBO(2, 3, 129, 1),
+                Color(0xFF261E92),
+                Color(0xFF261E92),
               ],
               begin: FractionalOffset(0.0, 0.0),
               end: FractionalOffset(1.0, 0.0),
@@ -48,7 +48,7 @@ class _ItemsUploadScreenState extends State<ItemsUploadScreen> {
         title: const Text(
           "Add New Items",
           style: TextStyle(
-              fontSize: 30, fontFamily: "Lobster", color: Colors.white),
+              fontSize: 24, fontFamily: "Poppins", color: Colors.white),
         ),
         centerTitle: true,
         automaticallyImplyLeading: true,
@@ -66,7 +66,7 @@ class _ItemsUploadScreenState extends State<ItemsUploadScreen> {
         decoration: const BoxDecoration(
           gradient: LinearGradient(
             colors: [
-              Color.fromARGB(255, 45, 42, 245),
+              Color.fromARGB(255, 73, 71, 179),
               Color.fromARGB(255, 130, 155, 255)
             ],
             begin: FractionalOffset(0.0, 0.0),
@@ -98,7 +98,8 @@ class _ItemsUploadScreenState extends State<ItemsUploadScreen> {
                 },
                 child: const Text(
                   'Add New Items',
-                  style: TextStyle(color: Colors.white, fontSize: 18),
+                  style: TextStyle(
+                      color: Colors.white, fontSize: 18, fontFamily: "Poppins"),
                 ),
               ),
             ],
@@ -171,8 +172,8 @@ class _ItemsUploadScreenState extends State<ItemsUploadScreen> {
           decoration: const BoxDecoration(
             gradient: LinearGradient(
               colors: [
-                Color.fromRGBO(2, 3, 129, 1),
-                Color.fromRGBO(2, 3, 129, 1),
+                Color(0xFF261E92),
+                Color(0xFF261E92),
               ],
               begin: FractionalOffset(0.0, 0.0),
               end: FractionalOffset(1.0, 0.0),
@@ -184,7 +185,7 @@ class _ItemsUploadScreenState extends State<ItemsUploadScreen> {
         title: const Text(
           "Uploading New Item",
           style: TextStyle(
-              fontSize: 20, fontFamily: "Lobster", color: Colors.white),
+              fontSize: 20, fontFamily: "Poppins", color: Colors.white),
         ),
         centerTitle: true,
         automaticallyImplyLeading: true,
@@ -203,11 +204,10 @@ class _ItemsUploadScreenState extends State<ItemsUploadScreen> {
             child: const Text(
               "Add",
               style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18,
-                  fontFamily: "Varela",
-                  letterSpacing: 3),
+                color: Colors.white,
+                fontSize: 15,
+                fontFamily: "Poppins",
+              ),
             ),
           ),
         ],
@@ -248,9 +248,11 @@ class _ItemsUploadScreenState extends State<ItemsUploadScreen> {
                 style: const TextStyle(color: Colors.black),
                 controller: titleController,
                 decoration: const InputDecoration(
-                    hintText: "title",
-                    hintStyle: TextStyle(color: Colors.grey),
-                    border: InputBorder.none),
+                  hintText: "Title",
+                  hintStyle:
+                      TextStyle(color: Colors.grey, fontFamily: "Poppins"),
+                  border: InputBorder.none,
+                ),
               ),
             ),
           ),
@@ -269,8 +271,11 @@ class _ItemsUploadScreenState extends State<ItemsUploadScreen> {
                 style: const TextStyle(color: Colors.black),
                 controller: shortInfoController,
                 decoration: const InputDecoration(
-                    hintText: "info",
-                    hintStyle: TextStyle(color: Colors.grey),
+                    hintText: "Info",
+                    hintStyle: TextStyle(
+                      color: Colors.grey,
+                      fontFamily: "Poppins",
+                    ),
                     border: InputBorder.none),
               ),
             ),
@@ -291,7 +296,10 @@ class _ItemsUploadScreenState extends State<ItemsUploadScreen> {
                 controller: descriptionController,
                 decoration: const InputDecoration(
                     hintText: "Description",
-                    hintStyle: TextStyle(color: Colors.grey),
+                    hintStyle: TextStyle(
+                      color: Colors.grey,
+                      fontFamily: "Poppins",
+                    ),
                     border: InputBorder.none),
               ),
             ),
@@ -313,7 +321,10 @@ class _ItemsUploadScreenState extends State<ItemsUploadScreen> {
                 controller: priceController,
                 decoration: const InputDecoration(
                     hintText: "Price",
-                    hintStyle: TextStyle(color: Colors.grey),
+                    hintStyle: TextStyle(
+                      color: Colors.grey,
+                      fontFamily: "Poppins",
+                    ),
                     border: InputBorder.none),
               ),
             ),

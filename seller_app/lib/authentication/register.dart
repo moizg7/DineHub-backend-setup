@@ -1,7 +1,5 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:geocoding/geocoding.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
@@ -12,6 +10,11 @@ import '../mainScreens/home_screen.dart';
 import '../widgets/custom_text_field.dart';
 import '../widgets/error_Dialog.dart';
 import '../widgets/loading_dialog.dart';
+import 'package:seller_app/widgets/custom_text_input.dart';
+import 'package:seller_app/widgets/custom_button.dart';
+import 'package:seller_app/widgets/custom_top_bar.dart';
+import 'package:seller_app/mainScreens/welcome.dart';
+import 'package:seller_app/authentication/login.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -23,43 +26,22 @@ class RegisterScreen extends StatefulWidget {
 class _RegisterScreenState extends State<RegisterScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   TextEditingController nameController = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
-  TextEditingController confirmePasswordController = TextEditingController();
-  TextEditingController phoneController = TextEditingController();
-  TextEditingController locationController = TextEditingController();
   TextEditingController emailController = TextEditingController();
+  TextEditingController phoneController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+  TextEditingController confirmPasswordController = TextEditingController();
+  TextEditingController addressController = TextEditingController();
 
   XFile? imageXFile;
   final ImagePicker _picker = ImagePicker();
 
-  Position? position;
-  List<Placemark>? placeMarks;
-
   String sellerImageUrl = "";
-
-  String completeAddress = "";
 
   Future<void> _getImage() async {
     imageXFile = await _picker.pickImage(source: ImageSource.gallery);
     setState(() {
       imageXFile;
     });
-  }
-
-  getCurrentLocation() async {
-    LocationPermission permission = await Geolocator.requestPermission();
-    Position newPosition = await Geolocator.getCurrentPosition(
-      desiredAccuracy: LocationAccuracy.high,
-    );
-    position = newPosition;
-
-    placeMarks =
-        await placemarkFromCoordinates(position!.latitude, position!.longitude);
-
-    Placemark pMarks = placeMarks![0];
-    completeAddress =
-        '${pMarks.subThoroughfare} ${pMarks.thoroughfare},${pMarks.subLocality} ${pMarks.locality},${pMarks.subAdministrativeArea}, ${pMarks.administrativeArea} ${pMarks.postalCode},${pMarks.country}';
-    locationController.text = completeAddress;
   }
 
   Future<void> formValidation() async {
@@ -69,7 +51,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           builder: (context) {
             return const ErrorDialog(message: "Please select an image");
           });
-    } else if (passwordController.text != confirmePasswordController.text) {
+    } else if (passwordController.text != confirmPasswordController.text) {
       showDialog(
           context: context,
           builder: (context) {
@@ -77,9 +59,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
           });
     } else if (nameController.text.isNotEmpty &&
         emailController.text.isNotEmpty &&
-        passwordController.text.isNotEmpty &&
         phoneController.text.isNotEmpty &&
-        locationController.text.isNotEmpty) {
+        passwordController.text.isNotEmpty &&
+        addressController.text.isNotEmpty) {
       // Show loading dialog
       showDialog(
           context: context,
@@ -91,11 +73,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
             );
           });
 
-      // Call the function to register seller via Node.js API
-      await registerSeller();
-
-      // Close loading dialog after response
-      Navigator.pop(context);
+      // Call the function to register user via Node.js API
+      await registerUser();
     } else {
       showDialog(
           context: context,
@@ -106,7 +85,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     }
   }
 
-  Future<void> registerSeller() async {
+  Future<void> registerUser() async {
     try {
       final url = Uri.parse(register); // Adjust URL to your server
 
@@ -116,24 +95,34 @@ class _RegisterScreenState extends State<RegisterScreen> {
       request.fields['email'] = emailController.text.trim();
       request.fields['password'] = passwordController.text.trim();
       request.fields['phone'] = phoneController.text.trim();
-      request.fields['address'] = locationController.text.trim();
+      request.fields['address'] = addressController.text.trim();
 
       if (imageXFile != null) {
         var stream = http.ByteStream(imageXFile!.openRead());
         var length = await imageXFile!.length();
-        var multipartFile = http.MultipartFile('photo', stream, length,
+        var multipartFile = http.MultipartFile('photoUrl', stream, length,
             filename: imageXFile!.name);
         request.files.add(multipartFile);
       }
 
+      print("moiz: Sending request to $url with fields: ${request.fields}");
+
       var response = await request.send();
-      if (response.statusCode == 200) {
-        // Assuming the server responds with the seller data in the body
-        var responseData = await http.Response.fromStream(response);
-        var sellerData = jsonDecode(responseData.body);
+      print("moiz: Received response with status code: ${response.statusCode}");
+
+      var responseData = await http.Response.fromStream(response);
+      print("moiz: Full response body: ${responseData.body}");
+
+      if (response.statusCode == 201) {
+        var responseBody = jsonDecode(responseData.body);
+        var sellerData = responseBody['seller'];
+        print("moiz: Response data: $sellerData");
 
         // Save seller data locally
         await saveSellerDataLocally(sellerData);
+
+        // Close loading dialog
+        Navigator.pop(context);
 
         // Show success message
         showDialog(
@@ -150,6 +139,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
             MaterialPageRoute(builder: (context) => const HomeScreen());
         Navigator.pushReplacement(context, newRoute);
       } else {
+        print("moiz: Registration failed with response: ${responseData.body}");
+
+        // Close loading dialog
+        Navigator.pop(context);
+
         // Handle error
         showDialog(
             context: context,
@@ -159,6 +153,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
             });
       }
     } catch (e) {
+      // Close loading dialog
+      Navigator.pop(context);
+
+      print("moiz: An error occurred: $e");
+
       showDialog(
           context: context,
           builder: (context) {
@@ -169,135 +168,168 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   Future<void> saveSellerDataLocally(Map<String, dynamic> sellerData) async {
     sharedPreferences = await SharedPreferences.getInstance();
-    await sharedPreferences!.setString("uid", sellerData['uid']);
-    await sharedPreferences!.setString("email", sellerData['email']);
-    await sharedPreferences!.setString("name", sellerData['name']);
-    await sharedPreferences!.setString("photo", sellerData['photo']);
+    await sharedPreferences!.setString("uid", sellerData['_id'] ?? '');
+    await sharedPreferences!.setString("email", sellerData['email'] ?? '');
+    await sharedPreferences!.setString("name", sellerData['name'] ?? '');
+    await sharedPreferences!.setString("phone", sellerData['phone'] ?? '');
+    await sharedPreferences!.setString("address", sellerData['address'] ?? '');
+    await sharedPreferences!
+        .setString("photoUrl", sellerData['photoUrl'] ?? '');
   }
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Container(
+    return Scaffold(
+      body: SingleChildScrollView(
         child: Column(
-          mainAxisSize: MainAxisSize.max,
           children: [
-            const SizedBox(
-              height: 10,
-            ),
-            InkWell(
-              onTap: () {
-                _getImage();
+            CustomTopBar(
+              title: 'Register',
+              onBackPressed: () {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const welcome(),
+                  ),
+                );
               },
-              child: CircleAvatar(
-                  radius: MediaQuery.of(context).size.width * 0.20,
-                  backgroundColor: Colors.white,
-                  backgroundImage: imageXFile == null
-                      ? null
-                      : FileImage(
-                          File(imageXFile!.path),
-                        ),
-                  child: imageXFile == null
-                      ? Icon(
-                          Icons.add_photo_alternate,
-                          size: MediaQuery.of(context).size.width * 0.20,
-                          color: Colors.grey,
-                        )
-                      : null),
             ),
-            const SizedBox(
-              height: 10,
-            ),
-            Form(
-              key: _formKey,
+            const SizedBox(height: 56),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24.0),
               child: Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  CustomTextField(
-                    data: Icons.person,
+                  CustomTextInput(
+                    label: 'Name',
+                    hintText: 'Enter your name',
                     controller: nameController,
-                    hintText: 'Name',
-                    isObsecre: false,
                   ),
-                  CustomTextField(
-                    data: Icons.email,
+                  const SizedBox(height: 12),
+                  CustomTextInput(
+                    label: 'Email',
+                    hintText: 'Enter your email',
                     controller: emailController,
-                    hintText: 'Email',
-                    isObsecre: false,
                   ),
-                  CustomTextField(
-                    data: Icons.lock,
-                    controller: passwordController,
-                    hintText: 'Password',
-                    isObsecre: true,
-                  ),
-                  CustomTextField(
-                    data: Icons.lock,
-                    controller: confirmePasswordController,
-                    hintText: 'Confirm Password',
-                    isObsecre: true,
-                  ),
-                  CustomTextField(
-                    data: Icons.phone,
+                  const SizedBox(height: 12),
+                  CustomTextInput(
+                    label: 'Phone',
+                    hintText: 'Enter your phone number',
                     controller: phoneController,
-                    hintText: 'Phone',
-                    isObsecre: false,
                   ),
-                  CustomTextField(
-                    data: Icons.my_location,
-                    controller: locationController,
-                    hintText: 'Cafe/Restaurent Address',
-                    isObsecre: false,
-                    enabled: true,
+                  const SizedBox(height: 12),
+                  CustomTextInput(
+                    label: 'Address',
+                    hintText: 'Enter your address',
+                    controller: addressController,
                   ),
-                  Container(
-                    width: 400,
-                    height: 40,
-                    alignment: Alignment.center,
-                    child: ElevatedButton.icon(
-                      onPressed: () {
-                        //  print(completeAddress.toString());
-                        setState(() {
-                          getCurrentLocation();
-                        });
-                      },
-                      icon: const Icon(
-                        Icons.location_on,
-                        color: Colors.white,
-                      ),
-                      label: const Text(
-                        'Get My Current Location',
-                        style: TextStyle(color: Colors.white),
+                  const SizedBox(height: 12),
+                  CustomTextInput(
+                    label: 'Password',
+                    hintText: 'Enter your password',
+                    controller: passwordController,
+                    isPassword: true,
+                  ),
+                  const SizedBox(height: 12),
+                  CustomTextInput(
+                    label: 'Confirm Password',
+                    hintText: 'Confirm your password',
+                    controller: confirmPasswordController,
+                    isPassword: true,
+                  ),
+                  const SizedBox(height: 24),
+                  Center(
+                    child: ElevatedButton(
+                      onPressed: _getImage,
+                      child: const Text(
+                        "Add Photo",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontFamily: "Poppins",
+                        ),
                       ),
                       style: ElevatedButton.styleFrom(
-                          backgroundColor: Color.fromARGB(255, 250, 171, 119),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30),
-                          )),
+                        backgroundColor: Color(0xFF261E92),
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                      ),
                     ),
-                  )
+                  ),
+                  const SizedBox(height: 12),
+                  if (imageXFile != null)
+                    Center(
+                      child: Image.file(
+                        File(imageXFile!.path),
+                        height: 150,
+                        width: 150,
+                      ),
+                    ),
+                  const SizedBox(height: 24),
+                  Center(
+                    child: CustomButton(
+                      text: 'Sign Up',
+                      onPressed: formValidation,
+                      width: 200,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  Container(
+                    width: double.infinity,
+                    height: 24,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const LoginScreen(),
+                              ),
+                            );
+                          },
+                          child: SizedBox(
+                            width: double.infinity,
+                            child: Text.rich(
+                              TextSpan(
+                                children: [
+                                  TextSpan(
+                                    text: 'Already have an account? ',
+                                    style: TextStyle(
+                                      color: Color(0xFF838383),
+                                      fontSize: 14,
+                                      fontFamily: 'Poppins',
+                                      fontWeight: FontWeight.w400,
+                                      height: 1.71,
+                                    ),
+                                  ),
+                                  TextSpan(
+                                    text: 'Log In',
+                                    style: TextStyle(
+                                      color: Color(0xFF007DFC),
+                                      fontSize: 14,
+                                      fontFamily: 'Poppins',
+                                      fontWeight: FontWeight.w400,
+                                      height: 1.71,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),
-            const SizedBox(
-              height: 30,
-            ),
-            ElevatedButton(
-              onPressed: () => {
-                formValidation(),
-              },
-              style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color.fromRGBO(2, 3, 129, 1),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 50, vertical: 20)),
-              child: const Text(
-                "Sign Up",
-                style:
-                    TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-              ),
-            ),
-            const SizedBox(
-              height: 30,
-            )
           ],
         ),
       ),

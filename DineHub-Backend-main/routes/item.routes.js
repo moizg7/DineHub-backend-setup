@@ -21,5 +21,7 @@ router.get("/item/:menuId", ItemController.getItems);
 
 router.post("/item/delete", ItemController.deleteItem);
 
+// Add this line to handle fetching items by their IDs
+router.post("/item/getItemsByIds", ItemController.getItemsByIds);
 
 module.exports = router;

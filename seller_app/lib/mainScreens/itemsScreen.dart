@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:seller_app/global/global.dart';
-import 'package:seller_app/model/items.dart';
+import 'package:seller_app/models/items.dart';
 import 'package:seller_app/uploadScreens.dart/items_upload_screen.dart';
 import 'package:seller_app/widgets/items_design.dart';
 import 'package:seller_app/widgets/my_drower.dart';
@@ -23,6 +23,7 @@ class ItemsScreen extends StatefulWidget {
 
 class _ItemsScreenState extends State<ItemsScreen> {
   List<Items> _itemsList = [];
+  bool _isLoading = true;
 
   @override
   void initState() {
@@ -61,6 +62,10 @@ class _ItemsScreenState extends State<ItemsScreen> {
         }
       } catch (error) {
         print("Error fetching items: $error");
+      } finally {
+        setState(() {
+          _isLoading = false;
+        });
       }
     } else {
       throw Exception('Menu ID is null');
@@ -75,8 +80,8 @@ class _ItemsScreenState extends State<ItemsScreen> {
           decoration: const BoxDecoration(
             gradient: LinearGradient(
               colors: [
-                Color.fromRGBO(2, 3, 129, 1),
-                Color.fromRGBO(2, 3, 129, 1)
+                Color(0xFF261E92),
+                Color(0xFF261E92),
               ],
               begin: FractionalOffset(0.0, 0.0),
               end: FractionalOffset(1.0, 0.0),
@@ -88,8 +93,8 @@ class _ItemsScreenState extends State<ItemsScreen> {
         title: Text(
           sharedPreferences!.getString("name")!,
           style: const TextStyle(
-            fontSize: 30,
-            fontFamily: "Train",
+            fontSize: 24,
+            fontFamily: "Poppins",
             color: Colors.white,
           ),
         ),
@@ -119,24 +124,37 @@ class _ItemsScreenState extends State<ItemsScreen> {
           SliverPersistentHeader(
               delegate: TextWidgetHeader(
                   title: "My ${widget.model!.menuTitle}'s Items")),
-          _itemsList.isEmpty
+          _isLoading
               ? SliverToBoxAdapter(
                   child: Center(
                     child: circularProgress(),
                   ),
                 )
-              : SliverStaggeredGrid.countBuilder(
-                  crossAxisCount: 1,
-                  staggeredTileBuilder: (context) => const StaggeredTile.fit(1),
-                  itemBuilder: (context, index) {
-                    Items model = _itemsList[index];
-                    return ItemDesignWidget(
-                      model: model,
-                      context: context,
-                    );
-                  },
-                  itemCount: _itemsList.length,
-                ),
+              : _itemsList.isEmpty
+                  ? SliverToBoxAdapter(
+                      child: Center(
+                        child: Text(
+                          "No items available",
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontFamily: "Poppins",
+                          ),
+                        ),
+                      ),
+                    )
+                  : SliverStaggeredGrid.countBuilder(
+                      crossAxisCount: 1,
+                      staggeredTileBuilder: (context) =>
+                          const StaggeredTile.fit(1),
+                      itemBuilder: (context, index) {
+                        Items model = _itemsList[index];
+                        return ItemDesignWidget(
+                          model: model,
+                          context: context,
+                        );
+                      },
+                      itemCount: _itemsList.length,
+                    ),
         ],
       ),
     );

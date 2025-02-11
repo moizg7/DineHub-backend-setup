@@ -33,3 +33,14 @@ exports.deleteItem = async (req, res, next) => {
         res.status(400).json({ status: false, message: error.message });
     }
 }
+
+// Add this method to handle fetching items by their IDs
+exports.getItemsByIds = async (req, res, next) => {
+    try {
+        const { itemIds } = req.body;
+        const items = await ItemServices.getItemsByIds(itemIds);
+        res.json(items);
+    } catch (error) {
+        res.status(400).json({ status: false, message: error.message });
+    }
+}

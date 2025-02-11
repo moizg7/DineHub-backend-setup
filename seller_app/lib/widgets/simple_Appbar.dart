@@ -1,11 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart'; // Import the services package
 
 class SimpleAppBar extends StatelessWidget implements PreferredSizeWidget {
   String? title;
 
   final PreferredSizeWidget? bottom;
 
-  SimpleAppBar({this.bottom, this.title});
+  SimpleAppBar({this.bottom, this.title}) {
+    // Set the status bar color when the SimpleAppBar is created
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+      statusBarColor: Color(0xFF261E92), // Set the status bar color
+    ));
+  }
+
   @override
   Size get preferredSize => bottom == null
       ? Size(56, AppBar().preferredSize.height)
@@ -18,8 +25,8 @@ class SimpleAppBar extends StatelessWidget implements PreferredSizeWidget {
         decoration: const BoxDecoration(
           gradient: LinearGradient(
             colors: [
-              Color.fromRGBO(2, 3, 129, 1),
-              Color.fromRGBO(2, 3, 129, 1)
+              Color(0xFF261E92),
+              Color(0xFF261E92),
             ],
             begin: FractionalOffset(0.0, 0.0),
             end: FractionalOffset(1.0, 0.0),
@@ -31,7 +38,7 @@ class SimpleAppBar extends StatelessWidget implements PreferredSizeWidget {
       title: Text(
         title!,
         style: const TextStyle(
-            fontSize: 30, fontFamily: "Train", color: Colors.white),
+            fontSize: 24, fontFamily: "Poppins", color: Colors.white),
       ),
       centerTitle: true,
       automaticallyImplyLeading: true,

@@ -100,6 +100,8 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    print(
+        "moiz: Building OrderDetailsScreen with orderStatus: $orderStatus and addressData: $addressData");
     return Scaffold(
       body: Column(
         children: [
@@ -128,7 +130,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                           Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: Text(
-                              "Order Id =${widget.orderId!}",
+                              "Approximate Time: ${orderData!["approximateTime"]} minutes",
                               style: const TextStyle(fontSize: 16),
                             ),
                           ),

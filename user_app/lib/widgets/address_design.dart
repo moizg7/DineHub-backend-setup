@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:user_app/assistant_methods/address_changer.dart';
-import 'package:user_app/mainScreens/placed_order_screen.dart';
+import 'package:user_app/mainScreens/payment_method_screen.dart';
 import 'package:user_app/models/address.dart';
 
 class AddressDesign extends StatefulWidget {
@@ -94,7 +94,7 @@ class _AddressDesignState extends State<AddressDesign> {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => PlacedOrderScreen(
+                              builder: (context) => PaymentMethodScreen(
                                     addressID: widget.addressID,
                                     totolAmmount: widget.totolAmmount,
                                     sellerUID: widget.sellerUID,

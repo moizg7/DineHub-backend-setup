@@ -1,20 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:seller_app/mainScreens/item_detail_screen.dart';
-import 'package:seller_app/mainScreens/itemsScreen.dart';
-import 'package:seller_app/model/items.dart';
-import 'package:seller_app/model/menus.dart';
+import 'package:seller_app/models/items.dart';
 
-class ItemDesignWidget extends StatefulWidget {
-  Items? model;
-  BuildContext? context;
+class ItemDesignWidget extends StatelessWidget {
+  final Items model;
+  final BuildContext context;
 
-  ItemDesignWidget({super.key, this.model, this.context});
+  ItemDesignWidget({super.key, required this.model, required this.context});
 
-  @override
-  State<ItemDesignWidget> createState() => _ItemDesignWidgetState();
-}
-
-class _ItemDesignWidgetState extends State<ItemDesignWidget> {
   @override
   Widget build(BuildContext context) {
     return InkWell(
@@ -22,7 +15,7 @@ class _ItemDesignWidgetState extends State<ItemDesignWidget> {
         Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) => ItemDetailsScreen(model: widget.model)));
+                builder: (context) => ItemDetailsScreen(model: model)));
       },
       splashColor: Colors.amber,
       child: Padding(
@@ -40,18 +33,18 @@ class _ItemDesignWidgetState extends State<ItemDesignWidget> {
               height: 1,
             ),
             Text(
-              widget.model!.title!,
+              model.itemName!,
               style: const TextStyle(
                   color: Color.fromARGB(255, 0, 0, 0),
                   fontSize: 18,
-                  fontFamily: "Times New Roman"),
+                  fontFamily: "Poppins"),
             ),
             const SizedBox(
               height: 2,
             ),
             Center(
               child: Image.network(
-                widget.model!.thumbnailUrl!,
+                model.thumbnailUrl!,
                 height: 220,
                 width: 220,
                 fit: BoxFit.cover,
@@ -71,13 +64,6 @@ class _ItemDesignWidgetState extends State<ItemDesignWidget> {
             ),
             const SizedBox(
               height: 2,
-            ),
-            Text(
-              widget.model!.shortInfo!,
-              style: const TextStyle(
-                  color: Color.fromARGB(255, 50, 106, 204),
-                  fontSize: 20,
-                  fontFamily: "Times  New Roman"),
             ),
             Divider(
               height: 4,

@@ -32,8 +32,8 @@ class _MenusUploadScreenState extends State<MenusUploadScreen> {
           decoration: const BoxDecoration(
             gradient: LinearGradient(
               colors: [
-                Color.fromRGBO(2, 3, 129, 1),
-                Color.fromRGBO(2, 3, 129, 1)
+                Color(0xFF261E92),
+                Color(0xFF261E92),
               ],
               begin: FractionalOffset(0.0, 0.0),
               end: FractionalOffset(1.0, 0.0),
@@ -45,7 +45,7 @@ class _MenusUploadScreenState extends State<MenusUploadScreen> {
         title: const Text(
           "Add New Menu",
           style: TextStyle(
-              fontSize: 30, fontFamily: "Lobster", color: Colors.white),
+              fontSize: 24, fontFamily: "Poppins", color: Colors.white),
         ),
         centerTitle: true,
         automaticallyImplyLeading: true,
@@ -63,7 +63,7 @@ class _MenusUploadScreenState extends State<MenusUploadScreen> {
         decoration: const BoxDecoration(
           gradient: LinearGradient(
             colors: [
-              Color.fromARGB(255, 45, 42, 245),
+              Color.fromARGB(255, 73, 71, 179),
               Color.fromARGB(255, 130, 155, 255)
             ],
             begin: FractionalOffset(0.0, 0.0),
@@ -101,7 +101,8 @@ class _MenusUploadScreenState extends State<MenusUploadScreen> {
                 },
                 child: const Text(
                   'Add New Menu',
-                  style: TextStyle(color: Colors.white, fontSize: 18),
+                  style: TextStyle(
+                      color: Colors.white, fontSize: 18, fontFamily: "Poppins"),
                 ),
               ),
             ],
@@ -174,8 +175,8 @@ class _MenusUploadScreenState extends State<MenusUploadScreen> {
           decoration: const BoxDecoration(
             gradient: LinearGradient(
               colors: [
-                Color.fromRGBO(2, 3, 129, 1),
-                Color.fromRGBO(2, 3, 129, 1)
+                Color(0xFF261E92),
+                Color(0xFF261E92),
               ],
               begin: FractionalOffset(0.0, 0.0),
               end: FractionalOffset(1.0, 0.0),
@@ -187,7 +188,7 @@ class _MenusUploadScreenState extends State<MenusUploadScreen> {
         title: const Text(
           "Uploading New Menu",
           style: TextStyle(
-              fontSize: 20, fontFamily: "Lobster", color: Colors.white),
+              fontSize: 20, fontFamily: "Poppins", color: Colors.white),
         ),
         centerTitle: true,
         automaticallyImplyLeading: true,
@@ -206,11 +207,10 @@ class _MenusUploadScreenState extends State<MenusUploadScreen> {
             child: const Text(
               "Add",
               style: TextStyle(
-                  color: Color.fromARGB(255, 250, 250, 250),
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18,
-                  fontFamily: "Varela",
-                  letterSpacing: 3),
+                color: Color.fromARGB(255, 250, 250, 250),
+                fontSize: 15,
+                fontFamily: "Poppins",
+              ),
             ),
           ),
         ],
@@ -251,8 +251,11 @@ class _MenusUploadScreenState extends State<MenusUploadScreen> {
                 style: const TextStyle(color: Colors.black),
                 controller: titleController,
                 decoration: const InputDecoration(
-                    hintText: "menu title",
-                    hintStyle: TextStyle(color: Colors.grey),
+                    hintText: "Menu Title",
+                    hintStyle: TextStyle(
+                      color: Colors.grey,
+                      fontFamily: "Poppins", // Change font to Poppins
+                    ),
                     border: InputBorder.none),
               ),
             ),
@@ -272,8 +275,11 @@ class _MenusUploadScreenState extends State<MenusUploadScreen> {
                 style: const TextStyle(color: Colors.black),
                 controller: shortInfoController,
                 decoration: const InputDecoration(
-                    hintText: "menu info",
-                    hintStyle: TextStyle(color: Colors.grey),
+                    hintText: "Menu Info",
+                    hintStyle: TextStyle(
+                      color: Colors.grey,
+                      fontFamily: "Poppins", // Change font to Poppins
+                    ),
                     border: InputBorder.none),
               ),
             ),

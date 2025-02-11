@@ -2,11 +2,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../global/global.dart';
 
-
-separateOrderItemIds(orderId) {
+List<String> separateOrderItemIds(List<dynamic> orderId) {
   List<String> separateItemIdsList = [], defaultItemList = [];
   int i = 0;
-  
+
   defaultItemList = List<String>.from(orderId);
 
   for (i; i < defaultItemList.length; i++) {
@@ -20,7 +19,7 @@ separateOrderItemIds(orderId) {
   return separateItemIdsList;
 }
 
-separateItemIds() {
+List<String> separateItemIds() {
   List<String> separateItemIdsList = [], defaultItemList = [];
   int i = 0;
   defaultItemList = sharedPreferences!.getStringList("userCart")!;
@@ -36,22 +35,11 @@ separateItemIds() {
   return separateItemIdsList;
 }
 
-
-
-separateOrderItemQuantities(orderId) {
+List<String> separateOrderItemQuantities(List<dynamic> cart) {
   List<String> separateItemQuantityList = [];
-  List<String> defaultItemList = [];
 
-  defaultItemList = List<String>.from(orderId);
-
-  for (int i = 1; i < defaultItemList.length; i++) {
-    String item = defaultItemList[i].toString();
-
-    List<String> listItemCharacters = item.split(":").toList();
-
-    var quanNumber = int.parse(listItemCharacters[1].toString());
-
-    separateItemQuantityList.add(quanNumber.toString());
+  for (var item in cart) {
+    separateItemQuantityList.add(item['quantity'].toString());
   }
 
   return separateItemQuantityList;
@@ -86,6 +74,5 @@ clearCartNow(context) {
       .doc(firebaseAuth.currentUser!.uid)
       .update({"userCart": emptyList}).then((value) {
     sharedPreferences!.setStringList("userCart", emptyList!);
-   
   });
 }

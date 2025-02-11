@@ -1,30 +1,18 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:seller_app/global/global.dart';
 import 'package:seller_app/model/address.dart';
-
-import '../splashScreen/splash_screen.dart';
+import 'package:seller_app/splashScreen/splash_screen.dart';
 
 class ShipmentAddressDesign extends StatelessWidget {
   final Address? model;
-  final String? orderStatus;
-  final String? sellerId;
-  final String? orderByUser;
-  final String? orderId;
 
-  const ShipmentAddressDesign(
-      {super.key,
-      this.model,
-      this.orderStatus,
-      this.orderId,
-      this.sellerId,
-      this.orderByUser});
-
-  confirmPracelShipment(BuildContext context, String getOrderId,
-      String sellerId, String purchaserId) {}
+  const ShipmentAddressDesign({super.key, this.model});
 
   @override
   Widget build(BuildContext context) {
+    print("moiz: ShipmentAddressDesign build method called with model: $model");
+    if (model == null) {
+      return Center(child: Text("No address data available"));
+    }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -47,19 +35,19 @@ class ShipmentAddressDesign extends StatelessWidget {
                 TableRow(
                   children: [
                     const Text(
-                      "Name",
+                      "Room No",
                       style: TextStyle(color: Colors.black),
                     ),
-                    Text(model!.name.toString()),
+                    Text(model!.roomNo.toString()),
                   ],
                 ),
                 TableRow(
                   children: [
                     const Text(
-                      "Phone Number",
+                      "Hostel",
                       style: TextStyle(color: Colors.black),
                     ),
-                    Text(model!.phoneNumber!),
+                    Text(model!.hostel.toString()),
                   ],
                 ),
               ],
@@ -72,7 +60,7 @@ class ShipmentAddressDesign extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.all(18.0),
           child: Text(
-            model!.fullAddress!,
+            "Room No: ${model!.roomNo}, Hostel: ${model!.hostel}",
             textAlign: TextAlign.justify,
           ),
         ),
@@ -88,10 +76,12 @@ class ShipmentAddressDesign extends StatelessWidget {
               },
               child: Container(
                 alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  gradient: const LinearGradient(
-                    colors: [Colors.pinkAccent, Colors.redAccent],
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      Color(0xFF261E92),
+                      Color(0xFF261E92),
+                    ],
                     begin: FractionalOffset(0.0, 0.0),
                     end: FractionalOffset(1.0, 0.0),
                     stops: [0.0, 1.0],
@@ -100,18 +90,15 @@ class ShipmentAddressDesign extends StatelessWidget {
                 ),
                 width: MediaQuery.of(context).size.width - 40,
                 height: 50,
-                child: Center(
+                child: const Center(
                   child: Text(
-                    orderStatus == "ended" ? "Go Back" : "Order Packing-Done",
+                    "Go Back",
                     style: TextStyle(color: Colors.white, fontSize: 15.0),
                   ),
                 ),
               ),
             ),
           ),
-        ),
-        const SizedBox(
-          height: 20,
         )
       ],
     );

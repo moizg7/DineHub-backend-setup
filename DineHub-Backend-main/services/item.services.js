@@ -22,7 +22,6 @@ class ItemServices {
         }
     }
 
-
     static async getItems(menuId) {
         try {
             const items = await ItemModel.find({ menuId }).lean();
@@ -36,10 +35,20 @@ class ItemServices {
         try {
             await ItemModel.findByIdAndDelete(itemId);
             return { status: true, message: 'Item deleted successfully' };
-            } catch (err) {
+        } catch (err) {
             throw err;
-            }
         }
+    }
+
+    // Add this method to handle fetching items by their IDs
+    static async getItemsByIds(itemIds) {
+        try {
+            const items = await ItemModel.find({ _id: { $in: itemIds } }).lean();
+            return { status: true, items };
+        } catch (err) {
+            throw err;
+        }
+    }
 }
 
 module.exports = ItemServices;

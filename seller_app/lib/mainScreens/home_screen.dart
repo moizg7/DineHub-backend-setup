@@ -20,6 +20,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   List<Menus> _menusList = [];
+  bool _isLoading = true;
 
   @override
   void initState() {
@@ -51,6 +52,10 @@ class _HomeScreenState extends State<HomeScreen> {
       }
     } catch (error) {
       print("Error fetching menus: $error");
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 
@@ -63,8 +68,8 @@ class _HomeScreenState extends State<HomeScreen> {
           decoration: const BoxDecoration(
             gradient: LinearGradient(
               colors: [
-                Color.fromRGBO(2, 3, 129, 1),
-                Color.fromRGBO(2, 3, 129, 1)
+                Color(0xFF261E92),
+                Color(0xFF261E92),
               ],
               begin: FractionalOffset(0.0, 0.0),
               end: FractionalOffset(1.0, 0.0),
@@ -76,8 +81,8 @@ class _HomeScreenState extends State<HomeScreen> {
         title: Text(
           sharedPreferences!.getString("name")!,
           style: const TextStyle(
-            fontSize: 30,
-            fontFamily: "Train",
+            fontSize: 24,
+            fontFamily: "Poppins",
             color: Colors.white,
           ),
         ),
@@ -106,28 +111,41 @@ class _HomeScreenState extends State<HomeScreen> {
       body: CustomScrollView(
         slivers: [
           SliverPersistentHeader(
-            delegate: TextWidgetHeader(title: "My Menus"),
+            delegate: TextWidgetHeader(title: "Menus"),
           ),
-          _menusList.isEmpty
+          _isLoading
               ? SliverToBoxAdapter(
                   child: Center(
                     child: circularProgress(),
                   ),
                 )
-              : SliverStaggeredGrid.countBuilder(
-                  crossAxisCount: 1,
-                  staggeredTileBuilder: (context) => const StaggeredTile.fit(1),
-                  itemBuilder: (context, index) {
-                    Menus model = _menusList[index];
-                    print(
-                        "HomeScreen: menuId = ${model.menuId}"); // Debug print
-                    return InfoDesignWidget(
-                      model: model,
-                      context: context,
-                    );
-                  },
-                  itemCount: _menusList.length,
-                ),
+              : _menusList.isEmpty
+                  ? SliverToBoxAdapter(
+                      child: Center(
+                        child: Text(
+                          "No menus available",
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontFamily: "Poppins",
+                          ),
+                        ),
+                      ),
+                    )
+                  : SliverStaggeredGrid.countBuilder(
+                      crossAxisCount: 1,
+                      staggeredTileBuilder: (context) =>
+                          const StaggeredTile.fit(1),
+                      itemBuilder: (context, index) {
+                        Menus model = _menusList[index];
+                        print(
+                            "HomeScreen: menuId = ${model.menuId}"); // Debug print
+                        return InfoDesignWidget(
+                          model: model,
+                          context: context,
+                        );
+                      },
+                      itemCount: _menusList.length,
+                    ),
         ],
       ),
     );

@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:seller_app/global/global.dart';
-import 'package:seller_app/model/items.dart';
-import 'package:seller_app/splashScreen/splash_screen.dart';
+import 'package:seller_app/models/items.dart';
+import 'package:seller_app/mainScreens/home_screen.dart'; // Import HomeScreen
 import 'package:seller_app/widgets/simple_Appbar.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:seller_app/config.dart';
 
 class ItemDetailsScreen extends StatefulWidget {
-  final Items? model;
-  const ItemDetailsScreen({super.key, this.model});
+  final Items model;
+  const ItemDetailsScreen({super.key, required this.model});
 
   @override
   State<ItemDetailsScreen> createState() => _ItemDetailsScreenState();
@@ -19,20 +19,39 @@ class ItemDetailsScreen extends StatefulWidget {
 class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
   TextEditingController counterTextEditingController = TextEditingController();
 
-  deleteItem(String itemId) async {
+  deleteItemFromServer(String itemId) async {
     if (itemId.isNotEmpty) {
-      final url = Uri.parse(getitem + itemId);
-      final response = await http.delete(url);
+      final url = Uri.parse(
+          deleteItem); // Ensure deleteItem is a string from config.dart
+      final response = await http.post(
+        url,
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(<String, String>{
+          'itemId': itemId,
+        }),
+      );
+
+      print("Response status code: ${response.statusCode}"); // Debug print
+      print("Response body: ${response.body}"); // Debug print
 
       if (response.statusCode == 200) {
-        Fluttertoast.showToast(msg: "Item deleted successfully");
-        Navigator.push(context,
-            MaterialPageRoute(builder: (context) => const MySplashScreen()));
+        final data = jsonDecode(response.body);
+        if (data['status'] == true) {
+          Fluttertoast.showToast(msg: "Item deleted successfully");
+          Navigator.pushReplacement(
+              context, MaterialPageRoute(builder: (context) => HomeScreen()));
+        } else {
+          Fluttertoast.showToast(
+              msg: "Failed to delete item: ${data['message']}");
+        }
       } else {
+        Fluttertoast.showToast(msg: "Failed to delete item: ${response.body}");
         throw Exception('Failed to delete item');
       }
     } else {
-      throw Exception('Item ID is null or empty');
+      Fluttertoast.showToast(msg: "Item ID is empty");
     }
   }
 
@@ -48,7 +67,7 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
           children: [
             Center(
               child: Image.network(
-                widget.model!.thumbnailUrl.toString(),
+                widget.model.thumbnailUrl ?? '',
                 height: 220,
                 width: 220,
                 fit: BoxFit.cover,
@@ -69,7 +88,7 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Text(
-                widget.model!.title.toString(),
+                widget.model.itemName ?? '',
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 20,
@@ -79,7 +98,7 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Text(
-                widget.model!.longDescription.toString(),
+                widget.model.longDescription ?? '',
                 textAlign: TextAlign.justify,
                 style: const TextStyle(
                   fontWeight: FontWeight.normal,
@@ -90,7 +109,7 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Text(
-                "Rs ${widget.model!.price}",
+                "Rs ${widget.model.price?.toString() ?? ''}",
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 26,
@@ -103,15 +122,15 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
             Center(
               child: InkWell(
                 onTap: () {
-                  deleteItem(widget.model!.itemId!);
+                  deleteItemFromServer(widget.model.itemId!);
                 },
                 child: Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10),
                     gradient: const LinearGradient(
                       colors: [
-                        Color.fromRGBO(2, 3, 129, 1),
-                        Color.fromRGBO(2, 3, 129, 1)
+                        Color(0xFF261E92),
+                        Color(0xFF261E92),
                       ],
                       begin: FractionalOffset(0.0, 0.0),
                       end: FractionalOffset(1.0, 0.0),

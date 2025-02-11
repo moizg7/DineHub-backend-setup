@@ -5,6 +5,7 @@ import 'package:seller_app/mainScreens/earning_screens.dart';
 import 'package:seller_app/mainScreens/history_screen.dart';
 import 'package:seller_app/mainScreens/home_screen.dart';
 import 'package:seller_app/mainScreens/new_orders_screen.dart';
+import 'package:seller_app/mainScreens/welcome.dart';
 
 class MyDrawer extends StatelessWidget {
   @override
@@ -37,7 +38,7 @@ class MyDrawer extends StatelessWidget {
                 Text(
                   sharedPreferences!.getString("name")!,
                   style: const TextStyle(
-                      color: Colors.black, fontSize: 20, fontFamily: "Train"),
+                      color: Colors.black, fontSize: 20, fontFamily: "Poppins"),
                 )
               ],
             ),
@@ -62,7 +63,8 @@ class MyDrawer extends StatelessWidget {
                   ),
                   title: const Text(
                     "Home",
-                    style: TextStyle(color: Colors.black),
+                    style:
+                        TextStyle(color: Colors.black, fontFamily: "Poppins"),
                   ),
                   onTap: () {
                     Navigator.push(
@@ -83,7 +85,8 @@ class MyDrawer extends StatelessWidget {
                   ),
                   title: const Text(
                     "My Earnings",
-                    style: TextStyle(color: Colors.black),
+                    style:
+                        TextStyle(color: Colors.black, fontFamily: "Poppins"),
                   ),
                   onTap: () {
                     Navigator.push(
@@ -104,7 +107,8 @@ class MyDrawer extends StatelessWidget {
                   ),
                   title: const Text(
                     "New orders",
-                    style: TextStyle(color: Colors.black),
+                    style:
+                        TextStyle(color: Colors.black, fontFamily: "Poppins"),
                   ),
                   onTap: () {
                     Navigator.push(
@@ -146,14 +150,15 @@ class MyDrawer extends StatelessWidget {
                   ),
                   title: const Text(
                     "Sign Out",
-                    style: TextStyle(color: Colors.black),
+                    style:
+                        TextStyle(color: Colors.black, fontFamily: "Poppins"),
                   ),
                   onTap: () {
                     firebaseAuth.signOut().then((value) {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => const AuthScreen()));
+                              builder: (context) => const welcome()));
                     });
                   },
                 ),

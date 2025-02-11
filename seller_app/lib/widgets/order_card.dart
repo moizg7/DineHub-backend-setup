@@ -1,22 +1,25 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:seller_app/model/items.dart';
 import 'package:seller_app/widgets/order_details_screen.dart';
 
-
-
 class OrderCard extends StatelessWidget {
   final int? itemCount;
-  final List<DocumentSnapshot>? data;
+  final List<dynamic>? data;
   final String? orderId;
   final List<String>? seperateQuantitiesList;
+  final String? sellerName;
+  final double? totalPrice;
 
-  const OrderCard(
-      {super.key,
-      this.itemCount,
-      this.data,
-      this.orderId,
-      this.seperateQuantitiesList});
+  const OrderCard({
+    super.key,
+    this.itemCount,
+    this.data,
+    this.orderId,
+    this.seperateQuantitiesList,
+    this.sellerName,
+    this.totalPrice,
+  });
+
   @override
   Widget build(BuildContext context) {
     return InkWell(
@@ -40,16 +43,66 @@ class OrderCard extends StatelessWidget {
         ),
         padding: const EdgeInsets.all(10),
         margin: const EdgeInsets.all(10),
-        height: itemCount! * 125,
-        child: ListView.builder(
-          itemCount: itemCount,
-          physics: const NeverScrollableScrollPhysics(),
-          itemBuilder: (c, index) {
-            Items model =
-                Items.fromJson(data![index].data()! as Map<String, dynamic>);
-            return placedOrderDesignWidget(
-                model, context, seperateQuantitiesList![index]);
-          },
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Order ID : $orderId",
+                          style: const TextStyle(
+                            color: Colors.black,
+                            fontSize: 16,
+                            fontFamily: "Poppins",
+                          ),
+                        ),
+                        const SizedBox(height: 5),
+                        Text(
+                          "User Name : $sellerName",
+                          style: const TextStyle(
+                            color: Colors.black,
+                            fontSize: 16,
+                            fontFamily: "Poppins",
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              ListView.builder(
+                itemCount: itemCount,
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemBuilder: (c, index) {
+                  Items model =
+                      Items.fromJson(data![index] as Map<String, dynamic>);
+                  return placedOrderDesignWidget(
+                      model, context, seperateQuantitiesList?[index]);
+                },
+              ),
+              const SizedBox(height: 10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  const Text(
+                    "Total: Rs ",
+                    style: TextStyle(fontSize: 16, color: Colors.blue),
+                  ),
+                  Text(
+                    totalPrice?.toString() ?? '0',
+                    style: const TextStyle(color: Colors.blue, fontSize: 18),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -57,20 +110,13 @@ class OrderCard extends StatelessWidget {
 }
 
 Widget placedOrderDesignWidget(
-    Items model, BuildContext context, seperateQuantitiesList) {
+    Items model, BuildContext context, String? seperateQuantitiesList) {
   return Container(
     width: MediaQuery.of(context).size.width,
     height: 120,
     color: Colors.grey[200],
     child: Row(
       children: [
-        Image.network(
-          model.thumbnailUrl!,
-          width: 120,
-        ),
-        const SizedBox(
-          width: 10,
-        ),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -83,11 +129,11 @@ Widget placedOrderDesignWidget(
                 children: [
                   Expanded(
                     child: Text(
-                      model.title!,
+                      model.title ?? 'No Title',
                       style: const TextStyle(
                         color: Colors.black,
                         fontSize: 16,
-                        fontFamily: "Acme",
+                        fontFamily: "Poppins",
                       ),
                     ),
                   ),
@@ -95,11 +141,11 @@ Widget placedOrderDesignWidget(
                     height: 10,
                   ),
                   const Text(
-                    "₹",
+                    "Rs ",
                     style: TextStyle(fontSize: 16, color: Colors.blue),
                   ),
                   Text(
-                    model.price.toString(),
+                    model.price?.toString() ?? '0',
                     style: const TextStyle(color: Colors.blue, fontSize: 18),
                   )
                 ],
@@ -110,16 +156,16 @@ Widget placedOrderDesignWidget(
               Row(
                 children: [
                   const Text(
-                    "x",
-                    style: TextStyle(color: Colors.black54, fontSize: 14),
+                    "Quantity x",
+                    style: TextStyle(color: Colors.black, fontSize: 14),
                   ),
                   Expanded(
                     child: Text(
-                      seperateQuantitiesList,
+                      seperateQuantitiesList ?? '',
                       style: const TextStyle(
-                          color: Colors.black54,
-                          fontSize: 30,
-                          fontFamily: "Acme"),
+                          color: Colors.black,
+                          fontSize: 16,
+                          fontFamily: "Poppins"),
                     ),
                   )
                 ],

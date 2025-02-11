@@ -9,6 +9,7 @@ class ShipmentAddressDesign extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print("moiz: ShipmentAddressDesign build method called with model: $model");
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

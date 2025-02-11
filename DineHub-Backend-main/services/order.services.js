@@ -44,7 +44,7 @@ class OrderServices {
         }
     }
 
-    static async updateOrderStatus(orderId, status) {
+    static async updateOrderStatus(orderId, status, approximateTime) {
         try {
             const order = await OrderModel.findById(orderId);
             if (!order) {
@@ -52,6 +52,9 @@ class OrderServices {
             }
 
             order.orderStatus = status;
+            if (approximateTime) {
+                order.approximateTime = approximateTime;
+            }
             await order.save();
 
             return { status: true, message: 'Order status updated successfully', order };
@@ -138,6 +141,44 @@ class OrderServices {
             }
 
             return { status: true, orders };
+        } catch (err) {
+            throw err;
+        }
+    }
+
+    // New function to get new orders for a seller
+    static async getNewOrders(sellerId) {
+        try {
+            const orders = await OrderModel.find({ sellerId, orderStatus: 'pending' }).sort({ createdAt: -1 }).lean();
+
+            // Fetch user information for each order
+            for (const order of orders) {
+                const user = await UserModel.findById(order.userId);
+                if (user) {
+                    order.userName = user.name;
+                    order.userImage = user.photoUrl;
+                }
+
+                // Fetch product IDs from the order's cart
+                order.productIds = order.cart.map(item => item.itemId);
+            }
+
+            return { status: true, orders };
+        } catch (err) {
+            throw err;
+        }
+    }
+
+    static async getTotalEarningsBySeller(sellerId) {
+        try {
+            const orders = await OrderModel.find({ sellerId, orderStatus: 'delivered' });
+            let totalEarnings = 0;
+
+            for (const order of orders) {
+                totalEarnings += order.totalAmount;
+            }
+
+            return { status: true, totalEarnings };
         } catch (err) {
             throw err;
         }

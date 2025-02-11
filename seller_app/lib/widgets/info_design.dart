@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:seller_app/mainScreens/home_screen.dart';
 import 'package:seller_app/mainScreens/itemsScreen.dart';
 import 'package:seller_app/model/menus.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:seller_app/config.dart';
 
 class InfoDesignWidget extends StatefulWidget {
   final Menus model;
@@ -15,10 +19,36 @@ class InfoDesignWidget extends StatefulWidget {
 }
 
 class _InfoDesignWidgetState extends State<InfoDesignWidget> {
-  // Placeholder for deleteMenu function if needed in the future
-  void deleteMenu(String menuId) {
-    // Implement delete functionality with your Node.js backend if needed
-    Fluttertoast.showToast(msg: "Menu Deleted Successfully");
+  void deleteMenu(String menuId) async {
+    try {
+      final response = await http.post(
+        Uri.parse(delMenu),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(<String, String>{
+          'menuId': menuId,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        var responseData = jsonDecode(response.body);
+        if (responseData['status'] == true) {
+          Fluttertoast.showToast(msg: "Menu Deleted Successfully");
+          // Navigate to home screen after deletion
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const HomeScreen()),
+          );
+        } else {
+          Fluttertoast.showToast(msg: "Failed to delete menu");
+        }
+      } else {
+        Fluttertoast.showToast(msg: "Failed to delete menu");
+      }
+    } catch (e) {
+      Fluttertoast.showToast(msg: "An error occurred: $e");
+    }
   }
 
   @override
@@ -79,7 +109,7 @@ class _InfoDesignWidgetState extends State<InfoDesignWidget> {
                     style: const TextStyle(
                       color: Color.fromARGB(255, 0, 0, 0),
                       fontSize: 20,
-                      fontFamily: "Times New Roman",
+                      fontFamily: "Poppins",
                     ),
                   ),
                   IconButton(

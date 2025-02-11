@@ -24,4 +24,7 @@ router.post("/delete", UserController.deleteUser);
 router.post("/wallet/add", UserController.addMoneyToWallet); // Add money to wallet route
 router.post("/wallet/use", UserController.useWalletForPayment); // Use wallet for payment route
 
+// New route to get user address by user ID and address ID
+router.get("/user/:userId/address/:addressId", UserController.getAddressById);
+
 module.exports = router;

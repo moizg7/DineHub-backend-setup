@@ -1,4 +1,5 @@
 const MenuModel = require("../models/menu.model");
+const ItemModel = require("../models/item.model"); // Import the Item model
 
 class MenuServices {
     
@@ -35,8 +36,13 @@ class MenuServices {
 
     static async deleteMenu(menuId) {
         try {
+            // Delete the menu
             await MenuModel.findByIdAndDelete(menuId);
-            return { status: true, message: 'Menu deleted successfully' };
+
+            // Delete items associated with the menu
+            await ItemModel.deleteMany({ menuId });
+
+            return { status: true, message: 'Menu and associated items deleted successfully' };
         } catch (err) {
             throw err;
         }

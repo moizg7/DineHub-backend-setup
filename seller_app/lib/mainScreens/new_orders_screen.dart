@@ -1,12 +1,12 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:seller_app/assistant_methods/assistant_methods.dart';
 import 'package:seller_app/global/global.dart';
 import 'package:seller_app/widgets/order_card.dart';
 import 'package:seller_app/widgets/progress_bar.dart';
 import 'package:seller_app/widgets/simple_Appbar.dart';
-
-
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:seller_app/config.dart';
+import 'package:seller_app/assistant_methods/assistant_methods.dart'; // Import the assistant methods
 
 class NewOrdersScreen extends StatefulWidget {
   const NewOrdersScreen({super.key});
@@ -16,6 +16,75 @@ class NewOrdersScreen extends StatefulWidget {
 }
 
 class _NewOrdersScreenState extends State<NewOrdersScreen> {
+  List<Map<String, dynamic>> _ordersList = [];
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchNewOrders();
+  }
+
+  Future<void> fetchNewOrders() async {
+    final sellerUID = sharedPreferences!.getString("uid");
+    final url = Uri.parse(getNewOrders + sellerUID!);
+
+    try {
+      final response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data['status'] == true) {
+          setState(() {
+            _ordersList = List<Map<String, dynamic>>.from(data['orders']);
+          });
+          print("moiz, Orders fetched successfully: $_ordersList");
+        } else {
+          throw Exception('Failed to load orders: ${data['message']}');
+        }
+      } else {
+        throw Exception('Failed to load orders');
+      }
+    } catch (error) {
+      print("Error fetching orders: $error");
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> fetchOrderItems(
+      List<String> productIds) async {
+    final url = Uri.parse(getItemsByIds);
+    try {
+      final response = await http.post(
+        url,
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(<String, dynamic>{
+          'itemIds': productIds,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data['status'] == true) {
+          print("moiz, Items fetched successfully: ${data['items']}");
+          return List<Map<String, dynamic>>.from(data['items']);
+        } else {
+          throw Exception('Failed to load items: ${data['message']}');
+        }
+      } else {
+        throw Exception('Failed to load items');
+      }
+    } catch (error) {
+      print("Error fetching items: $error");
+      return [];
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -23,53 +92,63 @@ class _NewOrdersScreenState extends State<NewOrdersScreen> {
         appBar: SimpleAppBar(
           title: "New Orders",
         ),
-        body: StreamBuilder<QuerySnapshot>(
-          stream: FirebaseFirestore.instance
-              .collection("orders")
-              .where("status", isEqualTo: "normal")
-              .where("sellerUID", isEqualTo:sharedPreferences!.getString("uid"))
-              .snapshots(),
-          builder: (c, snapshot) {
-            return snapshot.hasData
-                ? ListView.builder(
-                    itemCount: snapshot.data?.docs.length,
+        body: _isLoading
+            ? Center(
+                child: circularProgress(),
+              )
+            : _ordersList.isEmpty
+                ? Center(
+                    child: Text(
+                      "No new orders available",
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontFamily: "Poppins",
+                      ),
+                    ),
+                  )
+                : ListView.builder(
+                    itemCount: _ordersList.length,
                     itemBuilder: (c, index) {
-                      return FutureBuilder<QuerySnapshot>(
-                        future: FirebaseFirestore.instance
-                            .collection("items")
-                            .where("itemId",
-                                whereIn: separateOrderItemIds(
-                                    (snapshot.data?.docs[index].data()
-                                        as Map<String, dynamic>)["productIds"]))
-                            .where("sellerUID",
-                                whereIn: (snapshot.data?.docs[index].data()
-                                    as Map<String, dynamic>)["uid"])
-                            .orderBy("publishedDate", descending: true)
-                            .get(),
+                      final order = _ordersList[index];
+                      final productIds = order['productIds'] != null
+                          ? List<String>.from(order['productIds'])
+                          : [];
+
+                      print("moiz, Order ID: ${order['_id']}");
+                      print("moiz, Product IDs: $productIds");
+
+                      return FutureBuilder<List<Map<String, dynamic>>>(
+                        future: fetchOrderItems(productIds.cast<String>()),
                         builder: (c, snap) {
-                          return snap.hasData
-                              ? OrderCard(
-                                  itemCount: snap.data?.docs.length,
-                                  data: snap.data?.docs,
-                                  orderId: snapshot.data?.docs[index].id,
-                                  seperateQuantitiesList:
-                                      separateOrderItemQuantities(
-                                          (snapshot.data?.docs[index].data()
-                                                  as Map<String, dynamic>)[
-                                              "productIds"]),
-                                )
-                              : Center(
+                          return snap.connectionState == ConnectionState.waiting
+                              ? Center(
                                   child: circularProgress(),
-                                );
+                                )
+                              : snap.hasData
+                                  ? OrderCard(
+                                      itemCount: snap.data?.length ?? 0,
+                                      data: snap.data ?? [],
+                                      orderId: order['_id'],
+                                      seperateQuantitiesList:
+                                          separateOrderItemQuantities(
+                                              order['cart']),
+                                      sellerName: order['userName'],
+                                      totalPrice:
+                                          order['totalAmount'].toDouble(),
+                                    )
+                                  : Center(
+                                      child: Text(
+                                        "Failed to load items",
+                                        style: TextStyle(
+                                          fontSize: 20,
+                                          fontFamily: "Poppins",
+                                        ),
+                                      ),
+                                    );
                         },
                       );
                     },
-                  )
-                : Center(
-                    child: circularProgress(),
-                  );
-          },
-        ),
+                  ),
       ),
     );
   }

@@ -23,6 +23,8 @@ final addMonyToWallet =
     url + "wallet/add"; // Add this line for adding money to wallet
 final useWalltForPayment =
     url + "wallet/use"; // Add this line for using wallet for payment
+final createStripeCheckoutSesion = url +
+    "create-checkout-session"; // Add this line for creating Stripe checkout session
 
 const String API_BASE = 'http://192.168.1.107:3000/';
 const String getSellers = API_BASE + 'seller/getsellers';

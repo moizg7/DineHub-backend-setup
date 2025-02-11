@@ -12,8 +12,8 @@ exports.placeOrder = async (req, res, next) => {
 
 exports.updateOrderStatus = async (req, res, next) => {
     try {
-        const { orderId, status } = req.body;
-        const response = await OrderServices.updateOrderStatus(orderId, status);
+        const { orderId, status, approximateTime } = req.body;
+        const response = await OrderServices.updateOrderStatus(orderId, status, approximateTime);
         res.json(response);
     } catch (error) {
         res.status(400).json({ status: false, message: error.message });
@@ -65,6 +65,28 @@ exports.getDeliveredOrders = async (req, res, next) => {
     try {
         const { userId } = req.params;
         const response = await OrderServices.getDeliveredOrders(userId);
+        res.json(response);
+    } catch (error) {
+        res.status(400).json({ status: false, message: error.message });
+    }
+}
+
+// New function to get new orders for a seller
+exports.getNewOrders = async (req, res, next) => {
+    try {
+        const { sellerId } = req.params;
+        const response = await OrderServices.getNewOrders(sellerId);
+        res.json(response);
+    } catch (error) {
+        res.status(400).json({ status: false, message: error.message });
+    }
+}
+
+// New function to get total earnings by seller
+exports.getTotalEarningsBySeller = async (req, res, next) => {
+    try {
+        const { sellerId } = req.params;
+        const response = await OrderServices.getTotalEarningsBySeller(sellerId);
         res.json(response);
     } catch (error) {
         res.status(400).json({ status: false, message: error.message });

@@ -120,6 +120,23 @@ class UserServices {
             return { status: false, message: err.message };
         }
     }
+
+    // New method to get user address by user ID and address ID
+    static async getAddressById(userId, addressId) {
+        try {
+            const user = await UserModel.findById(userId);
+            if (!user) {
+                return { status: false, message: "User not found" };
+            }
+            const address = user.addresses.id(addressId);
+            if (!address) {
+                return { status: false, message: "Address not found" };
+            }
+            return { status: true, address };
+        } catch (err) {
+            return { status: false, message: err.message };
+        }
+    }
 }
 
 module.exports = UserServices;

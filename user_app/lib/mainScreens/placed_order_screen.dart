@@ -12,9 +12,14 @@ class PlacedOrderScreen extends StatefulWidget {
   String? addressID;
   double? totolAmmount;
   String? sellerUID;
+  String? paymentType;
 
   PlacedOrderScreen(
-      {super.key, this.addressID, this.totolAmmount, this.sellerUID});
+      {super.key,
+      this.addressID,
+      this.totolAmmount,
+      this.sellerUID,
+      this.paymentType});
 
   @override
   State<PlacedOrderScreen> createState() => _PlacedOrderScreenState();
@@ -38,7 +43,7 @@ class _PlacedOrderScreenState extends State<PlacedOrderScreen> {
       "address": {
         "addressId": widget.addressID,
       },
-      "paymentType": "Cash on Delivery",
+      "paymentType": widget.paymentType,
       "approximateTime": "45 minutes",
     };
 
