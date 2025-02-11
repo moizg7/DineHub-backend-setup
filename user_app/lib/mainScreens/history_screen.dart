@@ -1,10 +1,11 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:user_app/assistant_methods/assistant_methods.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 import 'package:user_app/global/global.dart';
 import 'package:user_app/widgets/order_card.dart';
 import 'package:user_app/widgets/progress_bar.dart';
 import 'package:user_app/widgets/simple_Appbar.dart';
+import 'package:user_app/config.dart'; // Import the config file
 
 class HistoryScreen extends StatefulWidget {
   const HistoryScreen({super.key});
@@ -14,6 +15,38 @@ class HistoryScreen extends StatefulWidget {
 }
 
 class _HistoryScreenState extends State<HistoryScreen> {
+  List<dynamic> deliveredOrders = [];
+
+  @override
+  void initState() {
+    super.initState();
+    fetchDeliveredOrders();
+  }
+
+  Future<void> fetchDeliveredOrders() async {
+    final userId = sharedPreferences?.getString("uid");
+    final url = getDeliveredOrders +
+        (userId ?? ''); // Use the new route from config.dart
+
+    try {
+      final response = await http.get(Uri.parse(url));
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        if (data['status'] == true) {
+          setState(() {
+            deliveredOrders = data['orders'];
+          });
+        } else {
+          print("Failed to fetch delivered orders: ${data['message']}");
+        }
+      } else {
+        print("Failed to fetch delivered orders: ${response.statusCode}");
+      }
+    } catch (e) {
+      print("Error fetching delivered orders: $e");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -21,55 +54,29 @@ class _HistoryScreenState extends State<HistoryScreen> {
         appBar: SimpleAppBar(
           title: "History",
         ),
-        body: StreamBuilder<QuerySnapshot>(
-          stream: FirebaseFirestore.instance
-              .collection("users")
-              .doc(sharedPreferences?.getString("uid"))
-              .collection("orders")
-              .where("status", isEqualTo: "ended")
-              .orderBy("orderTime", descending: true)
-              .snapshots(),
-          builder: (c, snapshot) {
-            return snapshot.hasData
-                ? ListView.builder(
-                    itemCount: snapshot.data?.docs.length,
-                    itemBuilder: (c, index) {
-                      return FutureBuilder<QuerySnapshot>(
-                        future: FirebaseFirestore.instance
-                            .collection("items")
-                            .where("itemId",
-                                whereIn: separateOrderItemIds(
-                                    (snapshot.data?.docs[index].data()
-                                        as Map<String, dynamic>)["productIds"]))
-                            .where("orderedBy",
-                                whereIn: (snapshot.data?.docs[index].data()
-                                    as Map<String, dynamic>)["uid"])
-                            .orderBy("publishedDate", descending: true)
-                            .get(),
-                        builder: (c, snap) {
-                          return snap.hasData
-                              ? OrderCard(
-                                  itemCount: snap.data?.docs.length,
-                                  data: snap.data?.docs,
-                                  orderId: snapshot.data?.docs[index].id,
-                                  seperateQuantitiesList:
-                                      separateOrderItemQuantities(
-                                          (snapshot.data?.docs[index].data()
-                                                  as Map<String, dynamic>)[
-                                              "productIds"]),
-                                )
-                              : Center(
-                                  child: circularProgress(),
-                                );
-                        },
-                      );
-                    },
-                  )
-                : Center(
-                    child: circularProgress(),
+        body: deliveredOrders.isEmpty
+            ? Center(child: circularProgress())
+            : ListView.builder(
+                itemCount: deliveredOrders.length,
+                itemBuilder: (c, index) {
+                  final order = deliveredOrders[index];
+                  final sellerName = order['sellerName'];
+                  final sellerImage = order['sellerImage'];
+                  final totalPrice = (order['totalAmount'] as int).toDouble();
+
+                  return OrderCard(
+                    itemCount: order['cart'].length,
+                    data: order['cart'],
+                    orderId: order['_id'],
+                    seperateQuantitiesList: order['cart']
+                        .map<String>((item) => item['quantity'].toString())
+                        .toList(),
+                    sellerName: sellerName,
+                    sellerImage: sellerImage,
+                    totalPrice: totalPrice,
                   );
-          },
-        ),
+                },
+              ),
       ),
     );
   }

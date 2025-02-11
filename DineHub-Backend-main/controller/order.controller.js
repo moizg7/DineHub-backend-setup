@@ -59,3 +59,14 @@ exports.getOrderDetails = async (req, res, next) => {
         res.status(400).json({ status: false, message: error.message });
     }
 }
+
+// New function to get delivered orders
+exports.getDeliveredOrders = async (req, res, next) => {
+    try {
+        const { userId } = req.params;
+        const response = await OrderServices.getDeliveredOrders(userId);
+        res.json(response);
+    } catch (error) {
+        res.status(400).json({ status: false, message: error.message });
+    }
+}

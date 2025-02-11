@@ -72,7 +72,7 @@ class HomeLargeItems extends StatelessWidget {
                     Padding(
                       padding: EdgeInsets.all(10.0),
                       child: Text(
-                        'Book  Dining ',
+                        'Order Takeaway',
                         style: TextStyle(
                             color: Color.fromARGB(255, 255, 255, 255),
                             fontSize: 30,

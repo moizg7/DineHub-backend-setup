@@ -6,6 +6,7 @@ import 'package:user_app/mainScreens/history_screen.dart';
 import 'package:user_app/mainScreens/home_screen.dart';
 import 'package:user_app/mainScreens/my_orders_screen.dart';
 import 'package:user_app/mainScreens/search_screen.dart';
+import 'package:user_app/mainScreens/wallet.dart';
 import 'package:user_app/mainScreens/welcome.dart';
 
 class MyDrawer extends StatelessWidget {
@@ -49,7 +50,8 @@ class MyDrawer extends StatelessWidget {
                   ),
                   title: const Text(
                     "Home",
-                    style: TextStyle(color: Colors.black),
+                    style:
+                        TextStyle(color: Colors.black, fontFamily: "Poppins"),
                   ),
                   onTap: () {
                     Navigator.push(
@@ -70,7 +72,8 @@ class MyDrawer extends StatelessWidget {
                   ),
                   title: const Text(
                     "My Orders",
-                    style: TextStyle(color: Colors.black),
+                    style:
+                        TextStyle(color: Colors.black, fontFamily: "Poppins"),
                   ),
                   onTap: () {
                     Navigator.push(
@@ -91,7 +94,8 @@ class MyDrawer extends StatelessWidget {
                   ),
                   title: const Text(
                     "History",
-                    style: TextStyle(color: Colors.black),
+                    style:
+                        TextStyle(color: Colors.black, fontFamily: "Poppins"),
                   ),
                   onTap: () {
                     Navigator.push(
@@ -107,18 +111,19 @@ class MyDrawer extends StatelessWidget {
                 ),
                 ListTile(
                   leading: const Icon(
-                    Icons.search,
+                    Icons.wallet,
                     color: Colors.black,
                   ),
                   title: const Text(
-                    "Search",
-                    style: TextStyle(color: Colors.black),
+                    "Wallet",
+                    style:
+                        TextStyle(color: Colors.black, fontFamily: "Poppins"),
                   ),
                   onTap: () {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => SearchScreen()));
+                            builder: (context) => WalletScreen()));
                   },
                 ),
                 const Divider(
@@ -133,7 +138,8 @@ class MyDrawer extends StatelessWidget {
                   ),
                   title: const Text(
                     "Add new Address",
-                    style: TextStyle(color: Colors.black),
+                    style:
+                        TextStyle(color: Colors.black, fontFamily: "Poppins"),
                   ),
                   onTap: () {
                     Navigator.push(
@@ -154,7 +160,8 @@ class MyDrawer extends StatelessWidget {
                   ),
                   title: const Text(
                     "Sign Out",
-                    style: TextStyle(color: Colors.black),
+                    style:
+                        TextStyle(color: Colors.black, fontFamily: "Poppins"),
                   ),
                   onTap: () {
                     firebaseAuth.signOut().then((value) {

@@ -43,3 +43,23 @@ exports.deleteUser = async (req, res, next) => {
         res.status(400).json({ status: false, message: error.message });
     }
 }
+
+exports.addMoneyToWallet = async (req, res, next) => {
+    try {
+        const { userId, amount } = req.body;
+        const response = await UserServices.addMoneyToWallet(userId, amount);
+        res.json(response);
+    } catch (error) {
+        res.status(400).json({ status: false, message: error.message });
+    }
+}
+
+exports.useWalletForPayment = async (req, res, next) => {
+    try {
+        const { userId, amount } = req.body;
+        const response = await UserServices.useWalletForPayment(userId, amount);
+        res.json(response);
+    } catch (error) {
+        res.status(400).json({ status: false, message: error.message });
+    }
+}

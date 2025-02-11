@@ -32,7 +32,8 @@ const userSchema = new Schema({
     }
   }, // Required phone number
   cart: { type: [cartItemSchema], default: [], validate: [cartLimit, '{PATH} exceeds the limit of 99'] }, // Cart with a limit of 99 items
-  addresses: { type: [addressSchema], default: [], validate: [addressLimit, '{PATH} exceeds the limit of 5'] } // Addresses with a limit of 5
+  addresses: { type: [addressSchema], default: [], validate: [addressLimit, '{PATH} exceeds the limit of 5'] }, // Addresses with a limit of 5
+  wallet: { type: Number, default: 0, validate: [walletLimit, '{PATH} exceeds the limit of 10000'] } // Wallet with a limit of 10000
 });
 
 // Custom validator for cart limit
@@ -43,6 +44,11 @@ function cartLimit(val) {
 // Custom validator for address limit
 function addressLimit(val) {
   return val.length <= 5;
+}
+
+// Custom validator for wallet limit
+function walletLimit(val) {
+  return val <= 10000;
 }
 
 // Middleware: Encrypting user password before saving

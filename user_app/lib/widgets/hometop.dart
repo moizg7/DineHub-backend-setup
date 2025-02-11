@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:user_app/assistant_methods/cart_item_counter.dart';
+import 'package:user_app/mainScreens/cart_screen.dart';
 
 class CustomTopBar extends StatelessWidget {
   final String title;
@@ -49,7 +52,46 @@ class CustomTopBar extends StatelessWidget {
               fontWeight: FontWeight.w500,
             ),
           ),
-          SizedBox(width: 32), // Add a SizedBox to maintain spacing
+          Stack(
+            children: [
+              IconButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => CartScreen(),
+                    ),
+                  );
+                },
+                icon: Icon(
+                  Icons.shopping_cart_checkout,
+                  color: Colors.white,
+                ),
+              ),
+              Positioned(
+                right: 8,
+                top: 8,
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    Icon(Icons.brightness_1, size: 20, color: Colors.white),
+                    Consumer<CartItemCounter>(
+                      builder: (context, counter, c) {
+                        return Text(
+                          counter.count.toString(),
+                          style: TextStyle(
+                            color: Color.fromARGB(255, 54, 105, 244),
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ],
       ),
     );

@@ -20,7 +20,7 @@ class StatusBanner extends StatelessWidget {
     } else if (orderStatus == "on way") {
       iconData = Icons.local_shipping;
       message = "Order On the Way";
-    } else if (orderStatus == "ended") {
+    } else if (orderStatus == "delivered") {
       iconData = Icons.done;
       message = "Parcel Delivered";
     } else {

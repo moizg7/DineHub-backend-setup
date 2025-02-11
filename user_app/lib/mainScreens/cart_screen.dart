@@ -180,7 +180,7 @@ class _CartScreenState extends State<CartScreen> {
         slivers: [
           SliverPersistentHeader(
             pinned: true,
-            delegate: TextWidgetHeader(title: "My Cart List"),
+            delegate: TextWidgetHeader(title: "My Cart"),
           ),
           SliverToBoxAdapter(
             child: Consumer2<TotalAmmount, CartItemCounter>(

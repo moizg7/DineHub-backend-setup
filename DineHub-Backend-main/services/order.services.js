@@ -1,7 +1,7 @@
 const OrderModel = require("../models/order.model");
 const UserModel = require("../models/user.model");
 const ItemModel = require("../models/item.model");
-const SellerModel = require("../models/sellermodel"); // Import SellerModel
+const SellerModel = require("../models/sellermodel");
 
 class OrderServices {
     static async placeOrder(userId, sellerId, address, paymentType, approximateTime) {
@@ -22,13 +22,13 @@ class OrderServices {
 
             const orderData = {
                 userId,
-                sellerId, // Include sellerId
+                sellerId,
                 cart: user.cart,
                 address,
                 paymentType,
                 totalAmount,
                 approximateTime,
-                createdAt: new Date() // Set the creation date and time
+                createdAt: new Date()
             };
 
             const createOrder = new OrderModel(orderData);
@@ -90,7 +90,7 @@ class OrderServices {
 
             // Fetch seller information for each order
             for (const order of orders) {
-                const seller = await SellerModel.findById(order.sellerId); // Assuming sellerId is stored in the order
+                const seller = await SellerModel.findById(order.sellerId);
                 if (seller) {
                     order.sellerName = seller.name;
                     order.sellerImage = seller.photoUrl;
@@ -118,6 +118,26 @@ class OrderServices {
             await order.save();
 
             return { status: true, message: 'Order canceled successfully', order };
+        } catch (err) {
+            throw err;
+        }
+    }
+
+    // New function to get delivered orders
+    static async getDeliveredOrders(userId) {
+        try {
+            const orders = await OrderModel.find({ userId, orderStatus: 'delivered' }).sort({ createdAt: -1 }).lean();
+
+            // Fetch seller information for each order
+            for (const order of orders) {
+                const seller = await SellerModel.findById(order.sellerId);
+                if (seller) {
+                    order.sellerName = seller.name;
+                    order.sellerImage = seller.photoUrl;
+                }
+            }
+
+            return { status: true, orders };
         } catch (err) {
             throw err;
         }

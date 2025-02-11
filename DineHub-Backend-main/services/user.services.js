@@ -27,7 +27,8 @@ class UserServices {
                     name: createUser.name,
                     email: createUser.email,
                     phone: createUser.phone,
-                    userCart: createUser.userCart
+                    userCart: createUser.userCart,
+                    wallet: createUser.wallet
                 }
             };
         } catch (err) {
@@ -43,13 +44,8 @@ class UserServices {
                 return { status: false, message: "User not found" };
             }
 
-            // Debug print statements to log the passwords being compared
-            console.log("Plain text password:", password);
-            console.log("Stored password:", user.password);
-
             // Compare password using the comparePassword method from the model
             const isMatch = await user.comparePassword(password);
-            console.log("Password match result:", isMatch); // Debug print statement
 
             if (!isMatch) {
                 return { status: false, message: "Invalid password" };
@@ -64,7 +60,8 @@ class UserServices {
                     name: user.name,
                     email: user.email,
                     phone: user.phone,
-                    userCart: user.userCart
+                    userCart: user.userCart,
+                    wallet: user.wallet
                 }
             };
         } catch (err) {
@@ -83,8 +80,46 @@ class UserServices {
             return { status: false, message: err.message };
         }
     }
-    
 
+    static async addMoneyToWallet(userId, amount) {
+        try {
+            const user = await UserModel.findById(userId);
+            if (!user) {
+                return { status: false, message: "User not found" };
+            }
+
+            if (user.wallet + amount > 10000) {
+                return { status: false, message: "Wallet limit exceeded" };
+            }
+
+            user.wallet += amount;
+            await user.save();
+
+            return { status: true, message: "Money added to wallet successfully", wallet: user.wallet };
+        } catch (err) {
+            return { status: false, message: err.message };
+        }
+    }
+
+    static async useWalletForPayment(userId, amount) {
+        try {
+            const user = await UserModel.findById(userId);
+            if (!user) {
+                return { status: false, message: "User not found" };
+            }
+
+            if (user.wallet < amount) {
+                return { status: false, message: "Insufficient wallet balance" };
+            }
+
+            user.wallet -= amount;
+            await user.save();
+
+            return { status: true, message: "Payment successful", wallet: user.wallet };
+        } catch (err) {
+            return { status: false, message: err.message };
+        }
+    }
 }
 
 module.exports = UserServices;

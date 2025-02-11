@@ -21,7 +21,7 @@ router.post("/login", UserController.login); // New login route added
 
 router.post("/delete", UserController.deleteUser);
 
-// Uncomment the login route if you plan to handle login as well
-// router.post("/login", UserController.login);
+router.post("/wallet/add", UserController.addMoneyToWallet); // Add money to wallet route
+router.post("/wallet/use", UserController.useWalletForPayment); // Use wallet for payment route
 
 module.exports = router;
