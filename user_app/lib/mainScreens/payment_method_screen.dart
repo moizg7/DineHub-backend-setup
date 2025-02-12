@@ -54,9 +54,6 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
       final clientSecret = data['client_secret'];
 
       try {
-        final data = jsonDecode(response.body);
-        final clientSecret = data['client_secret'];
-
         await Stripe.instance.initPaymentSheet(
           paymentSheetParameters: SetupPaymentSheetParameters(
             paymentIntentClientSecret: clientSecret,
@@ -64,24 +61,26 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
           ),
         );
 
-        // Wait for the payment sheet to be presented
-        await Stripe.instance.presentPaymentSheet();
-        print("Payment successful");
-
-        // After successful payment, navigate to the next screen
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => PlacedOrderScreen(
-              addressID: widget.addressID,
-              totolAmmount: widget.totolAmmount,
-              sellerUID: widget.sellerUID,
-              paymentType: selectedPaymentMethod,
+        await Stripe.instance.presentPaymentSheet().then((paymentResult) {
+          // Handle successful payment
+          print("Payment successful: $paymentResult");
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => PlacedOrderScreen(
+                addressID: widget.addressID,
+                totolAmmount: widget.totolAmmount,
+                sellerUID: widget.sellerUID,
+                paymentType: selectedPaymentMethod,
+              ),
             ),
-          ),
-        );
+          );
+        }).catchError((error) {
+          // Handle payment error
+          print("Error presenting payment sheet: $error");
+        });
       } catch (e) {
-        print("Error during payment process: $e");
+        print("Error initializing payment sheet: $e");
       }
     } else {
       print("Failed to create Stripe checkout session");

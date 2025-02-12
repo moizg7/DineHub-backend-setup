@@ -130,7 +130,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                           Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: Text(
-                              "Approximate Time: ${orderData!["approximateTime"]} minutes",
+                              "Approximate Time: ${orderData!["approximateTime"]}",
                               style: const TextStyle(fontSize: 16),
                             ),
                           ),
